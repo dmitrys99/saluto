@@ -19,5 +19,6 @@
           provider-list
           (list provider-list))))
 
-
 (defparameter *provider-list* ())
+
+(defparameter +module-str+ "-MODULE")

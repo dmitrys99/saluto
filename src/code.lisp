@@ -11,7 +11,7 @@
              (instance nil))
         (when (not value)
 
-          (setf instance                         (make-instance (intern module)))
+          (setf instance                         (make-instance (intern module '#:saluto)))
 
           (init-module instance)
 

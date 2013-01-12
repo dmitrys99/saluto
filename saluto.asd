@@ -14,8 +14,11 @@
   :components ((:file "package")
                (:module "src"
                 :serial t
-                :components ((:file "base")
-                             (:file "oauth")))
+                :components ((:file "config")
+                             (:file "base")
+                             (:file "oauth")
+                             (:file "utils")
+                             (:file "code")))
                (:module "modules"
                 :serial t
                 :components ((:file "mail.ru")

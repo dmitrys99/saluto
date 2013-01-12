@@ -15,6 +15,7 @@
    (post-access-param-via :documentation "If access-token-method is :post then choose method for post: query or data"
                           :initform :query)
    (query-params          :documentation "Append parameters to redirect query if needed.")
+   (token-params          :documentation "List of parameter to access token query.")
    (receiver-path         :documentation "URI on our domain where to redirect on success or failure")
    (error-callback        :documentation "function called on error during authentication process"
                           :initform nil)))
@@ -24,8 +25,11 @@
 (defgeneric go-to-provider (oauth-2.0-module))
 (defgeneric receiver (oauth-2.0-module session code error?))
 (defgeneric build-goto-path (oauth-2.0-module session-str))
+(defgeneric prepare-access-token-request (oauth-2.0-module code))
 
-(defmacro new-oauth-provider (name &key init-values goto-fun receiver-fun)
+(defmacro new-oauth-provider (name &key init-values
+                                     goto-fun
+                                     receiver-fun)
   (let* ((provider         (string-upcase name))
          (provider-low     (string-downcase name))
          (provider-kw      (intern provider 'keyword))
@@ -37,7 +41,6 @@
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
     (push provider-kw *provider-list*)
 
-
     `(progn
        (defclass ,provider-module (oauth-2.0-module)())
        (defvar ,provider-var nil)
@@ -48,7 +51,7 @@
 
        (defmethod attach-routes (,provider-module)
 
-`         (restas:define-route ,s-route-go (,route-go
+         (restas:define-route ,s-route-go (,route-go
                                            :method :get
                                            :content-type "text/html")
            (go-to-provider ,provider-var))
@@ -76,7 +79,7 @@
          (dolist (i ,init-values)
            (setf (slot-value ,provider-module (car i))
                  (cdr i)))
-                                        ; receiver path constructed at build-goto-path
+         ;; receiver path is constructed at build-goto-path
          (setf (slot-value ,provider-module 'receiver-path)
                (concatenate 'string (concatenate 'string "/auth/receiver/" ,provider-low "/~A/"))))
 
@@ -115,3 +118,48 @@
                                          (format nil
                                                  (slot-value module 'receiver-path)
                                                  session-str)) :latin-1)))))
+
+(defmethod prepare-access-token-request ((module oauth-2.0-module) code)
+  (flet ((prep-params (params)
+           (let ((r (format nil "~{~A&~}"
+                            (loop for i in params
+                                  collect (concatenate 'string (car i) "=" (cdr i))))))
+             (subseq r 0 (1- (length r))))
+
+           ))
+    
+    (let ((parameters (slot-value module 'token-params))
+          (token-url (concatenate 'string
+                                  (slot-value module 'oauth-host)
+                                  (slot-value module 'access-token-path)))
+          (method (slot-value module 'access-token-method))
+          (via (slot-value module 'post-access-param-via))
+          (res nil))
+
+      (push (cons "client_id"     (slot-value module 'app-id)) parameters)
+      (push (cons "client_secret" (slot-value module 'app-secret-key)) parameters)
+      (push (cons "code" code) parameters)
+      (push (cons "redirect_uri"
+                  (drakma:url-encode
+                   (concatenate 'string
+                                (slot-value module 'domain)
+                                (format nil
+                                        (slot-value module 'receiver-path)
+                                        ;(session)
+                                        "session"
+                                        ))
+                   :latin-1))
+            parameters)
+      (setf parameters (reverse parameters))
+      (setf res (list token-url
+                      :method method
+                      :content-length t))
+
+      
+      (setf res
+            (append res
+                    (if (eql via :DATA)
+                        (list :content (prep-params parameters))
+                        (list :parameters parameters))))
+      res)))
+

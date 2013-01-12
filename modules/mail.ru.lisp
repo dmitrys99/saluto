@@ -7,17 +7,25 @@
                                    (post-access-param-via . :DATA)
                                    (access-token-method . :POST)
                                    (query-params . (("response_type" . "code")))
+                                   (token-params . (("grant_type" . "authorization_code")))
                                    (access-token-path . "/oauth/token"))
 
-                    :goto-fun     (lambda (module)
-                                    (if (not (session))
-                                        (progn
-                                          (start-session)
-                                          (redirect (build-goto-path module (session))))
-                                        (redirect "/")))
+                    :goto-fun
+                    (lambda (module)
+                      (if (not (session))
+                          (progn
+                            (start-session)
+                            (redirect (build-goto-path module (session))))
+                          (redirect "/")))
 
-                    :receiver-fun (lambda (module session code error?)
-                                    (declare (ignore session code error?))
-                                    (break "mail.ru receiver")
-                                    (slot-value module 'oauth-host)))
 
+                    :receiver-fun
+                    (lambda (module session code error?)
+                      (when (invalid-receiver-params? code
+                                                      session
+                                                      error?)
+                        (logout)
+                        (redirect "/"))
+                      )
+
+                    )

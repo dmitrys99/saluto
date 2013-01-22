@@ -3,12 +3,14 @@
 (defun make-provider (provider app-id app-secret domain)
   "Function creates instance of given provider"
   (let ((found (find provider *provider-list*)))
+    (break "~A: ~A" found *provider-list*)
     (when found
       (let* ((provider-str (string found))
              (module (concatenate 'string provider-str +module-str+))
              (variable (intern (concatenate 'string "*" module "*") '#:saluto))
              (value (symbol-value variable))
              (instance nil))
+
         (when (not value)
 
           (setf instance                         (make-instance (intern module '#:saluto)))

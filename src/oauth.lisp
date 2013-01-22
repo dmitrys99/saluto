@@ -25,11 +25,18 @@
 (defgeneric go-to-provider (oauth-2.0-module))
 (defgeneric receiver (oauth-2.0-module session code error?))
 (defgeneric build-goto-path (oauth-2.0-module session-str))
+(defgeneric full-receiver-path (oauth-2.0-module session-str))
 (defgeneric prepare-access-token-request (oauth-2.0-module code))
+(defgeneric prepare-userinfo (oauth-2.0-module params))
+(defgeneric parse-userinfo (oauth-2.0-module answer))
 
-(defmacro new-oauth-provider (name &key init-values
-                                     goto-fun
-                                     receiver-fun)
+(defmacro new-oauth-provider (name
+                              &key init-values
+                              goto-fun
+                              receiver-fun
+                              prepare-userinfo-fun
+                              parse-userinfo-fun)
+
   (let* ((provider         (string-upcase name))
          (provider-low     (string-downcase name))
          (provider-kw      (intern provider 'keyword))
@@ -83,6 +90,14 @@
          (setf (slot-value ,provider-module 'receiver-path)
                (concatenate 'string (concatenate 'string "/auth/receiver/" ,provider-low "/~A/"))))
 
+       (defmethod prepare-userinfo (,provider-module params)
+         (let ((fn ,prepare-userinfo-fun))
+           (funcall fn ,provider-module params)))
+
+       (defmethod parse-userinfo (,provider-module answer)
+         (let ((fn ,parse-userinfo-fun))
+           (funcall fn ,provider-module answer)))
+
        (defmethod go-to-provider (,provider-module)
          (let ((fn ,goto-fun ))
            (funcall fn ,provider-module)))
@@ -111,55 +126,41 @@
 
     (setf res (concatenate 'string res
                            "&" "redirect_uri="
-
-                           (drakma:url-encode
-                            (concatenate 'string
-                                         (slot-value module 'domain)
-                                         (format nil
-                                                 (slot-value module 'receiver-path)
-                                                 session-str)) :latin-1)))))
+                           (full-receiver-path module session-str)))
+    res))
 
 (defmethod prepare-access-token-request ((module oauth-2.0-module) code)
-  (flet ((prep-params (params)
-           (let ((r (format nil "~{~A&~}"
-                            (loop for i in params
-                                  collect (concatenate 'string (car i) "=" (cdr i))))))
-             (subseq r 0 (1- (length r))))
+  (let ((parameters (slot-value module 'token-params))
+        (token-url (concatenate 'string
+                                (slot-value module 'oauth-host)
+                                (slot-value module 'access-token-path)))
+        (method (slot-value module 'access-token-method))
+        (via (slot-value module 'post-access-param-via))
+        (res nil))
 
-           ))
-    
-    (let ((parameters (slot-value module 'token-params))
-          (token-url (concatenate 'string
-                                  (slot-value module 'oauth-host)
-                                  (slot-value module 'access-token-path)))
-          (method (slot-value module 'access-token-method))
-          (via (slot-value module 'post-access-param-via))
-          (res nil))
+    (push (cons "client_id"     (slot-value module 'app-id))           parameters)
+    (push (cons "client_secret" (slot-value module 'app-secret-key))   parameters)
+    (push (cons "code" code)                                           parameters)
+    (push (cons "redirect_uri"  (full-receiver-path module (session))) parameters)
 
-      (push (cons "client_id"     (slot-value module 'app-id)) parameters)
-      (push (cons "client_secret" (slot-value module 'app-secret-key)) parameters)
-      (push (cons "code" code) parameters)
-      (push (cons "redirect_uri"
-                  (drakma:url-encode
-                   (concatenate 'string
-                                (slot-value module 'domain)
-                                (format nil
-                                        (slot-value module 'receiver-path)
-                                        ;(session)
-                                        "session"
-                                        ))
-                   :latin-1))
-            parameters)
-      (setf parameters (reverse parameters))
-      (setf res (list token-url
-                      :method method
-                      :content-length t))
+    (setf parameters (reverse parameters))
 
-      
-      (setf res
-            (append res
-                    (if (eql via :DATA)
-                        (list :content (prep-params parameters))
-                        (list :parameters parameters))))
-      res)))
+    (setf res (list token-url
+                    :method method
+                    :content-length t))
 
+    (setf res
+          (append res
+                  (if (eql via :DATA)
+                      (list :content (concatenate-params parameters))
+                      (list :parameters parameters))))
+    res))
+
+(defmethod full-receiver-path (oauth-2.0-module session-str)
+  (drakma:url-encode
+   (concatenate 'string
+                (slot-value oauth-2.0-module 'domain)
+                (format nil
+                        (slot-value oauth-2.0-module 'receiver-path)
+                        session-str))
+   :latin-1))

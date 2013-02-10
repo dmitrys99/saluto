@@ -5,6 +5,7 @@
     (slot-value hunchentoot:*session* 'hunchentoot::session-string)))
 
 (defun redirect (path)
+  (break "~A" path)
   (hunchentoot:redirect path))
 
 (defun start-session ()
@@ -39,20 +40,9 @@
 (defun sort-params (params)
   (sort params 'string< :key 'car))
 
-(defun app-id (module)
-  (slot-value module 'app-id))
-
-(defun app-secret (module)
-  (slot-value module 'app-secret-key))
-
-(defun api-host (module)
-  (slot-value module 'api-host))
-
-
-(defun concatenate-params (params &optional (delimiter "&"))
+(defun concatenate-params (params &optional &key (delimiter "&"))
   (let* ((line (concatenate 'string "~{~A" delimiter "~}"))
          (r (format nil line
                    (loop for i in params
-                      collect (concatenate 'string (car i) "=" (cdr i)))
-                   )))
+                      collect (concatenate 'string (car i) "=" (cdr i))))))
     (subseq r 0 (1- (length r)))))

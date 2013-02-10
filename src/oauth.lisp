@@ -3,10 +3,15 @@
 (defclass oauth-2.0-module (base-auth-module)
   ((domain                :documentation "My domain to which authentication is attached.")
    (provider-name         :documentation "Name of the OAuth provider")
-   (api-host              :documentation "e.g. https://graph.facebook.com, the URI for REST API")
+   (api-host              :documentation "e.g. https://graph.facebook.com, the URI for REST API"
+                          :reader        api-host)
    (oauth-host            :documentation "URI to start OAuth iteraction")
-   (app-id                :documentation "OAuth App ID. Provider can call it differently")
-   (app-secret-key        :documentation "OAuth secret key")
+   (app-id                :documentation "OAuth App ID. Provider can call it differently"
+                          :reader        app-id)
+   (app-private-key       :documentation "Application private key"
+                          :reader        app-private)
+   (app-secret-key        :documentation "OAuth secret key"
+                          :reader        app-secret)
    (oauth-path            :documentation "The path on a provider's domain where we direct the user for authentication, e.g. /oauth/authorize"
                           :initform "/oauth/authorize")
    (access-token-path     :documentation "URI to optain the access_token value on a provider's domain")
@@ -32,7 +37,7 @@
 
 (defmacro new-oauth-provider (name
                               &key init-values
-                              goto-fun
+                              goto-funmail.ru-base-uri*mail.ru-base-uri*mail.ru-base-uri*
                               receiver-fun
                               prepare-userinfo-fun
                               parse-userinfo-fun)
@@ -48,13 +53,15 @@
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
     (push provider-kw *provider-list*)
 
+    ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
+    
     `(progn
        (defclass ,provider-module (oauth-2.0-module)())
        (defvar ,provider-var nil)
-       (export ',provider-var)
-       (export ',provider-module)
-       (export ',s-route-go)
-       (export ',s-route-receiver)
+       (export #:,provider-var)
+       (export #:,provider-module)
+       (export #:,s-route-go)
+       (export #:,s-route-receiver)
 
        (defmethod attach-routes (,provider-module)
 
@@ -110,6 +117,7 @@
   (assert (slot-value module 'domain))
   (assert (slot-value module 'app-id))
   (assert (slot-value module 'app-secret-key))
+  (assert (slot-value module 'app-private-key))
   (assert (slot-value module 'receiver-path))
   (let ((res ""))
     (setf res
@@ -139,7 +147,7 @@
         (res nil))
 
     (push (cons "client_id"     (slot-value module 'app-id))           parameters)
-    (push (cons "client_secret" (slot-value module 'app-secret-key))   parameters)
+    (push (cons "client_secret" (slot-value module 'app-private-key))  parameters)
     (push (cons "code" code)                                           parameters)
     (push (cons "redirect_uri"  (full-receiver-path module (session))) parameters)
 

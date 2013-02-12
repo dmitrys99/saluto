@@ -49,7 +49,7 @@
                         (let ((parameters (reverse (sort-params params)))
                               (sig ""))
                           (setf sig (md5 (concatenate 'string
-                                                      (concatenate-params params nil)
+                                                      (concatenate-params params :delimiter nil)
                                                       (app-secret module))))
                           (push (cons "sig" sig) parameters)
                           (list (api-host module)

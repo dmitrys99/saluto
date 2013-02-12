@@ -35,7 +35,7 @@
   (apply 'drakma:http-request params))
 
 (defun extract-authorization-key (provider-answer)
-  (jsown:val provider-answer "access_token"))
+  (jsown:val (jsown:parse provider-answer) "access_token"))
 
 (defun sort-params (params)
   (sort params 'string< :key 'car))

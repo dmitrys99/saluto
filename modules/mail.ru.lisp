@@ -41,22 +41,29 @@
                                                              (cons "secure" "1")
                                                              (cons "session_key" auth-key))))
                         (setf userinfo (request user-info-request))
-                        (parse-userinfo module userinfo)))
+                        (parse-userinfo module userinfo))
+                        (redirect "/"))
 
 ;;; ==================================================================
                       :prepare-userinfo-fun
                       (lambda (module params)
-                        (let ((parameters (reverse (sort-params params)))
-                              (sig ""))
-                          (setf sig (md5 (concatenate 'string
-                                                      (concatenate-params params :delimiter nil)
+                        (let* ((parameters (sort-params params))
+                               (params-reverse (reverse parameters))
+                               (con-params (concatenate-params parameters :delimiter nil))
+                               (sig "")
+                               (2sig (concatenate 'string
+                                                      con-params
                                                       (app-secret module))))
-                          (push (cons "sig" sig) parameters)
+;                          (break "con-params: ~A~%secret: ~A~%2sig: ~A" con-params (app-secret module) 2sig)
+                          (setf sig (md5 2sig))
+                          (push (cons "sig" sig) params-reverse)
+                          ;(break "~A" (reverse params-reverse))
                           (list (api-host module)
-                                :parameters parameters
+                                :parameters (reverse params-reverse)
                                 :content-length t
                                 :method :get)))
 
                       :parse-userinfo-fun
                       (lambda (module answer)
-                      (break "answer: ~A" answer)))
+                      ;(break "answer: ~A" answer)
+                      ))

@@ -35,7 +35,8 @@
   (apply 'drakma:http-request params))
 
 (defun extract-authorization-key (provider-answer)
-  (jsown:val (jsown:parse provider-answer) "access_token"))
+  (let ((res (jsown:val (jsown:parse provider-answer) "access_token")))
+    res))
 
 (defun sort-params (params)
   (sort params 'string< :key 'car))
@@ -45,4 +46,7 @@
          (r (format nil line
                    (loop for i in params
                       collect (concatenate 'string (car i) "=" (cdr i))))))
-    (subseq r 0 (1- (length r)))))
+    (if delimiter
+    (subseq r 0 (1- (length r)))
+    r)
+    ))

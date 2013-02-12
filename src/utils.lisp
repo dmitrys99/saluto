@@ -5,7 +5,7 @@
     (slot-value hunchentoot:*session* 'hunchentoot::session-string)))
 
 (defun redirect (path)
-  (break "~A" path)
+;  (break "~A" path)
   (hunchentoot:redirect path))
 
 (defun start-session ()

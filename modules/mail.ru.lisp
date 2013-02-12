@@ -41,7 +41,7 @@
                                                              (cons "secure" "1")
                                                              (cons "session_key" auth-key))))
                         (setf userinfo (request user-info-request))
-                        (parse-userinfo module userinfo))
+                        (parse-userinfo module userinfo)))
 
 ;;; ==================================================================
                       :prepare-userinfo-fun
@@ -58,6 +58,5 @@
                                 :method :get)))
 
                       :parse-userinfo-fun
-                      (lambda (module answer))
-                      (break "~A" answer)
-                      ))
+                      (lambda (module answer)
+                      (break "answer: ~A" answer)))

@@ -36,7 +36,8 @@
 (defgeneric parse-userinfo (oauth-2.0-module answer))
 
 (defmacro new-oauth-provider (name
-                              &key init-values
+                              &key
+                              init-values
                               goto-fun
                               receiver-fun
                               prepare-userinfo-fun
@@ -54,7 +55,7 @@
     (push provider-kw *provider-list*)
 
     ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
-    
+
     `(progn
        (defclass ,provider-module (oauth-2.0-module)())
        (defvar ,provider-var nil)
@@ -62,6 +63,7 @@
        (export ',provider-module)
        (export ',s-route-go)
        (export ',s-route-receiver)
+       (export 'attach-routes)
 
        (defmethod attach-routes (,provider-module)
 
@@ -106,7 +108,7 @@
            (funcall fn ,provider-module answer)))
 
        (defmethod go-to-provider (,provider-module)
-         (let ((fn ,goto-fun ))
+         (let ((fn ,goto-fun))
            (funcall fn ,provider-module)))
 
        (defmethod receiver (,provider-module session code error?)

@@ -29,13 +29,16 @@
 
 (defun attach-saluto (provider-list)
   (assert (listp provider-list))
+;  (break "attach-saluto (package): ~A" (package-name package))
   (dolist (i provider-list)
     (let ((module      (getf i :module))
           (app-id      (getf i :app-id))
           (app-private (getf i :app-private))
           (app-secret  (getf i :app-secret))
           (domain      (getf i :domain)))
-
-      (make-provider module app-id app-private app-secret domain))))
+;      (break)
+      (let ((provider  (make-provider module app-id app-private app-secret domain)))
+        (attach-routes provider))
+      )))
 
 

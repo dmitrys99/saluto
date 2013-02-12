@@ -37,7 +37,7 @@
 
 (defmacro new-oauth-provider (name
                               &key init-values
-                              goto-funmail.ru-base-uri*mail.ru-base-uri*mail.ru-base-uri*
+                              goto-fun
                               receiver-fun
                               prepare-userinfo-fun
                               parse-userinfo-fun)
@@ -58,10 +58,10 @@
     `(progn
        (defclass ,provider-module (oauth-2.0-module)())
        (defvar ,provider-var nil)
-       (export #:,provider-var)
-       (export #:,provider-module)
-       (export #:,s-route-go)
-       (export #:,s-route-receiver)
+       (export ',provider-var)
+       (export ',provider-module)
+       (export ',s-route-go)
+       (export ',s-route-receiver)
 
        (defmethod attach-routes (,provider-module)
 

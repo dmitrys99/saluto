@@ -3,7 +3,7 @@
 (defun make-provider (provider app-id app-private app-secret domain)
   "Function creates instance of given provider"
   (let ((found (find provider *provider-list*)))
-    ;(break "~A: ~A" found *provider-list*)
+    ;; (break "~A: ~A" found *provider-list*)
     (when found
       (let* ((provider-str (string found))
              (module (concatenate 'string provider-str +module-str+))
@@ -29,16 +29,15 @@
 
 (defun attach-saluto (provider-list)
   (assert (listp provider-list))
-;  (break "attach-saluto (package): ~A" (package-name package))
+  ;; (break "attach-saluto (package): ~A" (package-name package))
   (dolist (i provider-list)
     (let ((module      (getf i :module))
           (app-id      (getf i :app-id))
           (app-private (getf i :app-private))
           (app-secret  (getf i :app-secret))
           (domain      (getf i :domain)))
-;      (break)
+      ;; (break)
       (let ((provider  (make-provider module app-id app-private app-secret domain)))
-        (attach-routes provider))
-      )))
+        (attach-routes provider)))))
 
 

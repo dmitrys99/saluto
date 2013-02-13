@@ -5,7 +5,7 @@
     (slot-value hunchentoot:*session* 'hunchentoot::session-string)))
 
 (defun redirect (path)
-;  (break "~A" path)
+  ;;  (break "~A" path)
   (hunchentoot:redirect path))
 
 (defun start-session ()
@@ -44,9 +44,8 @@
 (defun concatenate-params (params &optional &key (delimiter "&"))
   (let* ((line (concatenate 'string "~{~A" delimiter "~}"))
          (r (format nil line
-                   (loop for i in params
-                      collect (concatenate 'string (car i) "=" (cdr i))))))
+                    (loop for i in params
+                       collect (concatenate 'string (car i) "=" (cdr i))))))
     (if delimiter
-    (subseq r 0 (1- (length r)))
-    r)
-    ))
+        (subseq r 0 (1- (length r)))
+        r)))

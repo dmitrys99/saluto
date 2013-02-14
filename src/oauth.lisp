@@ -22,6 +22,10 @@
    (query-params          :documentation "Append parameters to redirect query if needed.")
    (token-params          :documentation "List of parameter to access token query.")
    (receiver-path         :documentation "URI on our domain where to redirect on success or failure")
+
+   (store-userinfo-fun    :documentation "User defined function which stores user info data received from provider."
+                          :initform nil)
+
    (error-callback        :documentation "function called on error during authentication process"
                           :initform nil)))
 
@@ -54,7 +58,7 @@
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
     (push provider-kw *provider-list*)
 
-                                        ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
+    ;; (break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
 
     `(progn
        (defclass ,provider-module (oauth-2.0-module)())
@@ -63,6 +67,7 @@
        (export ',provider-module)
        (export ',s-route-go)
        (export ',s-route-receiver)
+       (export 'auth.logout)
        (export 'attach-routes)
 
        (defmethod attach-routes (,provider-module)
@@ -89,6 +94,13 @@
                (format nil
                        "This RESTAS route function receive authorization answer from provider '~A'."
                        ,name))
+
+         (restas:define-route auth.logout ("/auth/logout/"
+                                           :method :get
+                                           :content-type "text/html")
+           (logout)
+           (redirect "/"))
+
          t)
 
        (defmethod init-module (,provider-module)

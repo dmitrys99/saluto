@@ -4,19 +4,19 @@
 
 ;;; ==================================================================
 
-                    :init-values '((provider-name . "Mail.Ru")
-                                   (oauth-host . "https://connect.mail.ru")
-                                   (api-host . "http://www.appsmail.ru/platform/api")
-                                   (post-access-param-via . :DATA)
-                                   (access-token-method . :POST)
-                                   (query-params . (("response_type" . "code")))
-                                   (token-params . (("grant_type" . "authorization_code")))
-                                   (access-token-path . "/oauth/token"))
+                    :init-values '((provider-name           . "Mail.Ru")
+                                   (oauth-host              . "https://connect.mail.ru")
+                                   (api-host                . "http://www.appsmail.ru/platform/api")
+                                   (post-access-param-via   . :DATA)
+                                   (access-token-method     . :POST)
+                                   (query-params            . (("response_type"  . "code")))
+                                   (token-params            . (("grant_type"     . "authorization_code")))
+                                   (access-token-path       . "/oauth/token"))
 
 ;;; ==================================================================
 
                     :goto-fun
-                    (lambda (module)
+                    (alexandria:named-lambda goto-fun (module)
                       (if (not (session))
                           (progn
                             (start-session)
@@ -26,7 +26,7 @@
 ;;; ==================================================================
 
                     :receiver-fun
-                    (lambda (module session code error?)
+                    (alexandria:named-lambda receiver-fun (module session code error?)
                       (when (invalid-receiver-params? code
                                                       session
                                                       error?)
@@ -39,18 +39,20 @@
                             (userinfo nil))
 
                         (setf user-info-request
-                              (prepare-userinfo module (list (cons "app_id" (app-id module))
-                                                             (cons "method" "users.getInfo")
-                                                             (cons "secure" "1")
+                              (prepare-userinfo module (list (cons "app_id"      (app-id module))
+                                                             (cons "method"      "users.getInfo")
+                                                             (cons "secure"      "1")
                                                              (cons "session_key" auth-key))))
                         (setf userinfo (request user-info-request))
+
                         (parse-userinfo module userinfo))
+
                       (redirect "/"))
 
 ;;; ==================================================================
 
                     :prepare-userinfo-fun
-                    (lambda (module params)
+                    (alexandria:named-lambda prepare-user-info-fun (module params)
                       (let* ((parameters (sort-params params))
                              (params-reverse (reverse parameters))
                              (con-params (concatenate-params parameters :delimiter nil))
@@ -61,7 +63,7 @@
                         ;; (break "con-params: ~A~%secret: ~A~%2sig: ~A" con-params (app-secret module) 2sig)
                         (setf sig (md5 2sig))
                         (push (cons "sig" sig) params-reverse)
-                        ;;(break "~A" (reverse params-reverse))
+                        ;; (break "~A" (reverse params-reverse))
                         (list (api-host module)
                               :parameters (reverse params-reverse)
                               :content-length t
@@ -70,6 +72,7 @@
 ;;; ==================================================================
 
                     :parse-userinfo-fun
-                    (lambda (module answer)
+
+                    (alexandria:named-lambda parse-userinfo-fun (module answer)
                       (break "answer: ~A" answer)
                       ))

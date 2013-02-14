@@ -1,6 +1,6 @@
 (in-package #:saluto)
 
-(defun make-provider (provider app-id app-private app-secret domain)
+(defun make-provider (provider app-id app-private app-secret domain store-userinfo-fun)
   "Function creates instance of given provider"
   (let ((found (find provider *provider-list*)))
     ;; (break "~A: ~A" found *provider-list*)
@@ -18,16 +18,22 @@
           (init-module instance)
 
           (setf
-           (slot-value instance 'app-id)          app-id
-           (slot-value instance 'app-private-key) app-private
-           (slot-value instance 'app-secret-key)  app-secret
-           (slot-value instance 'domain)          domain
-           (symbol-value variable)                instance
-           value                                  (symbol-value variable)))
+           (slot-value instance 'app-id)             app-id
+           (slot-value instance 'app-private-key)    app-private
+           (slot-value instance 'app-secret-key)     app-secret
+           (slot-value instance 'domain)             domain
+           (slot-value instance 'store-userinfo-fun) (if store-userinfo-fun
+                                                         store-userinfo-fun
+                                                         #'(lambda (user-info)
+                                                             (declare (ignore user-info))
+                                                             (error "Store user info function not implemented")))
+
+           (symbol-value variable)                   instance
+           value                                     (symbol-value variable)))
 
         value))))
 
-(defun attach-saluto (provider-list)
+(defun attach-saluto (provider-list store-fun)
   (assert (listp provider-list))
   ;; (break "attach-saluto (package): ~A" (package-name package))
   (dolist (i provider-list)
@@ -37,7 +43,7 @@
           (app-secret  (getf i :app-secret))
           (domain      (getf i :domain)))
       ;; (break)
-      (let ((provider  (make-provider module app-id app-private app-secret domain)))
+      (let ((provider  (make-provider module app-id app-private app-secret domain store-fun)))
         (attach-routes provider)))))
 
 

@@ -36,8 +36,9 @@
 (defgeneric build-goto-path (oauth-2.0-module session-str))
 (defgeneric full-receiver-path (oauth-2.0-module session-str))
 (defgeneric prepare-access-token-request (oauth-2.0-module code))
-(defgeneric prepare-userinfo (oauth-2.0-module params))
+(defgeneric prepare-userinfo-request (oauth-2.0-module params))
 (defgeneric parse-userinfo (oauth-2.0-module answer))
+(defgeneric store-userinfo (oauth-2.0-module userinfo))
 
 (defmacro new-oauth-provider (name
                               &key
@@ -111,7 +112,7 @@
          (setf (slot-value ,provider-module 'receiver-path)
                (concatenate 'string (concatenate 'string "/auth/receiver/" ,provider-low "/~A/"))))
 
-       (defmethod prepare-userinfo (,provider-module params)
+       (defmethod prepare-userinfo-request (,provider-module params)
          (let ((fn ,prepare-userinfo-fun))
            (funcall fn ,provider-module params)))
 
@@ -186,3 +187,8 @@
                         (slot-value oauth-2.0-module 'receiver-path)
                         session-str))
    :latin-1))
+
+(defmethod store-userinfo (oauth-2.0-module userinfo)
+  (let ((fn (slot-value oauth-2.0-module 'store-userinfo-fun)))
+    (when fn
+      (funcall fn userinfo))))

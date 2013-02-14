@@ -35,18 +35,17 @@
 
                       (let ((auth-key (extract-authorization-key
                                        (request (prepare-access-token-request module code))))
-                            (user-info-request nil)
+                            (userinfo-request nil)
                             (userinfo nil))
 
-                        (setf user-info-request
-                              (prepare-userinfo module (list (cons "app_id"      (app-id module))
-                                                             (cons "method"      "users.getInfo")
-                                                             (cons "secure"      "1")
-                                                             (cons "session_key" auth-key))))
-                        (setf userinfo (request user-info-request))
-
-                        (parse-userinfo module userinfo))
-
+                        (setf userinfo-request
+                              (prepare-userinfo-request module (list (cons "app_id"      (app-id module))
+                                                                     (cons "method"      "users.getInfo")
+                                                                     (cons "secure"      "1")
+                                                                     (cons "session_key" auth-key))))
+                        (setf userinfo (request userinfo-request))
+                        (let ((parsed-userinfo (parse-userinfo module userinfo)))
+                          (store-userinfo module userinfo)))
                       (redirect "/"))
 
 ;;; ==================================================================
@@ -72,7 +71,17 @@
 ;;; ==================================================================
 
                     :parse-userinfo-fun
-
                     (alexandria:named-lambda parse-userinfo-fun (module answer)
-                      (break "answer: ~A" answer)
-                      ))
+                      (let* ((parsed-answer (jsown:parse answer))
+                             (first-name (jsown:val parsed-answer "first_name"))
+                             (last-name  (jsown:val parsed-answer "last_name"))
+                             (avatar     (jsown:val parsed-answer "pic_22"))
+                             (email      (jsown:val parsed-answer "email"))
+                             (uid        (jsown:val parsed-answer "uid")))
+                        (list :first-name first-name
+                              :last-name  last-name
+                              :avatar     avatar
+                              :email      email
+                              :uid        uid
+                              :session    (session)
+                              :provider   "Mail.Ru"))))

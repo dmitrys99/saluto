@@ -72,7 +72,7 @@
 
                     :parse-userinfo-fun
                     (alexandria:named-lambda parse-userinfo-fun (module answer)
-                      (let* ((parsed-answer (jsown:parse answer))
+                      (let* ((parsed-answer (first (jsown:parse answer)))
                              (first-name (jsown:val parsed-answer "first_name"))
                              (last-name  (jsown:val parsed-answer "last_name"))
                              (avatar     (jsown:val parsed-answer "pic_22"))

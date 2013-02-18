@@ -59,7 +59,7 @@
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
     (push provider-kw *provider-list*)
 
-    ;; (break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
+    ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
 
     `(progn
        (defclass ,provider-module (oauth-2.0-module)())

@@ -46,7 +46,7 @@
                                                                        (cons "session_key" auth-key))))
                           (setf userinfo (request userinfo-request))
                           (let ((parsed-userinfo (parse-userinfo module userinfo)))
-                            (store-userinfo module userinfo)))
+                            (store-userinfo module parsed-userinfo)))
                         (redirect "/"))
 
 ;;; ==================================================================

@@ -131,8 +131,8 @@
 (defmethod build-goto-path ((module oauth-2.0-module) session-str)
   (assert (slot-value module 'domain))
   (assert (slot-value module 'app-id))
-  (assert (slot-value module 'app-secret-key))
-  (assert (slot-value module 'app-private-key))
+  (assert (or (slot-value module 'app-secret-key)
+              (slot-value module 'app-private-key)))
   (assert (slot-value module 'receiver-path))
   (let ((res ""))
     (setf res

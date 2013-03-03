@@ -1,5 +1,7 @@
 (in-package #:saluto)
 
+
+(info-message "init *provider-list*")
 (defparameter *provider-list* ())
 
 (defparameter +module-str+ "-MODULE")

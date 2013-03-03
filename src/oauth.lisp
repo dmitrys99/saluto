@@ -57,6 +57,9 @@
          (s-route-receiver (intern (concatenate 'string provider ".RECEIVER")          '#:saluto))
          (route-go         (concatenate 'string "/auth/go/" provider-low "/"))
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
+
+    (info-message (format nil "Ready to push provider-kw: ~A" provider-kw))
+    
     (push provider-kw *provider-list*)
 
     ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)

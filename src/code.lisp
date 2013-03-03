@@ -11,12 +11,16 @@
              (value (symbol-value variable))
              (instance nil))
 
+        (prince (format nil "value: ~A" value))
+        
         (when (not value)
 
           (setf instance                         (make-instance (intern module '#:saluto)))
 
+          (princ (format nil "instance: ~A" instance))
+          
           (init-module instance)
-
+          
           (setf
            (slot-value instance 'app-id)             app-id
            (slot-value instance 'app-private-key)    app-private

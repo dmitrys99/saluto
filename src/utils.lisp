@@ -49,3 +49,36 @@
     (if delimiter
         (subseq r 0 (1- (length r)))
         r)))
+
+
+(defun init-logger ()
+
+  (setf *logger* (log:make-logger))
+
+  (log:config *logger*
+	      :immediate-flush t
+	      :sane
+	      :daily   (concatenate 'string *saluto-log-prefix* "/" *saluto-log*)
+	      :pattern "SLT: %D{%Y-%m-%d %H:%M:%S} [%p] %t %m%n")
+
+  (info-message "Saluto logging started"))
+
+(defun untilde (s)
+  (if (stringp s)
+      (multiple-value-bind (a b)
+	  (cl-ppcre:regex-replace-all "~" s "~1~")
+	(declare (ignore b))a)
+      nil))
+
+;;;; TODO DRY!
+(defun debug-message (message)
+  (log:debug *logger* (untilde message)))
+
+(defun error-message (message)
+  (log:error *logger* (untilde message)))
+
+(defun info-message (message)
+  (log:info *logger* (untilde message)))
+
+(defun warning-message (message)
+  (log:warn *logger* (untilde message)))

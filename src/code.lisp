@@ -2,7 +2,7 @@
 
 (defun make-provider (provider app-id app-private app-secret domain store-userinfo-fun)
   "Function creates instance of given provider"
-  (format t "In make-provider")
+  (info-message "In make-provider")
   (let ((found (find provider *provider-list*)))
     ;; (break "~A: ~A" found *provider-list*)
     (when found
@@ -12,13 +12,13 @@
              (value (symbol-value variable))
              (instance nil))
 
-        (format t "value: ~A" value)
+        (info-message (format nil "value: ~A" value))
         
         (when (not value)
 
           (setf instance                         (make-instance (intern module '#:saluto)))
 
-          (format t "instance: ~A" instance)
+          (info-message (format nil "instance: ~A" instance))
           
           (init-module instance)
           

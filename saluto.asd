@@ -9,6 +9,8 @@
                #:restas
                #:ironclad
                #:jsown
+               #:cl-ppcre
+               #:log4cl
                #:drakma)
   :serial t
   :components ((:file "package")
@@ -18,7 +20,8 @@
                              (:file "base")
                              (:file "oauth")
                              (:file "utils")
-                             (:file "code")))
+                             (:file "code")
+                             (:file "starter")))
                (:module "modules"
                 :serial t
                 :components ((:file "mail.ru")

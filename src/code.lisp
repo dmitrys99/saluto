@@ -2,6 +2,7 @@
 
 (defun make-provider (provider app-id app-private app-secret domain store-userinfo-fun)
   "Function creates instance of given provider"
+  (format t "In make-provider")
   (let ((found (find provider *provider-list*)))
     ;; (break "~A: ~A" found *provider-list*)
     (when found
@@ -11,13 +12,13 @@
              (value (symbol-value variable))
              (instance nil))
 
-        (prince (format nil "value: ~A" value))
+        (format t "value: ~A" value)
         
         (when (not value)
 
           (setf instance                         (make-instance (intern module '#:saluto)))
 
-          (princ (format nil "instance: ~A" instance))
+          (format t "instance: ~A" instance)
           
           (init-module instance)
           
@@ -47,7 +48,7 @@
           (app-secret  (getf i :app-secret))
           (domain      (getf i :domain)))
       ;; (break)
-      (let ((provider  (make-provider module app-id app-private app-secret domain store-fun)))
+      (let ((provider (make-provider module app-id app-private app-secret domain store-fun)))
         (attach-routes provider)))))
 
 

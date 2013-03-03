@@ -34,7 +34,7 @@
 (defun request (params)
   (apply 'drakma:http-request params))
 
-(defun extract-authorization-key (provider-answer)
+(defun extract-access-token (provider-answer)
   (let ((res (jsown:val (jsown:parse provider-answer) "access_token")))
     res))
 

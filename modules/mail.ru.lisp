@@ -34,7 +34,7 @@
                           (logout)
                           (redirect "/"))
 
-                        (let ((auth-key (extract-authorization-key
+                        (let ((auth-key (extract-access-token
                                          (request (prepare-access-token-request module code))))
                               (userinfo-request nil)
                               (userinfo nil))

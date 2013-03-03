@@ -1,5 +1,6 @@
 (in-package #:saluto)
 
+#|
 (eval-when (:load-toplevel)
   (new-oauth-provider "FACEBOOK.COM"
 
@@ -80,3 +81,4 @@
                                 :uid        uid
                                 :session    (session)
                                 :provider   "facebook.com")))))
+|#

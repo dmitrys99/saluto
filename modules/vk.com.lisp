@@ -1,8 +1,9 @@
 (in-package #:saluto)
 
+#|
 (eval-when (:load-toplevel)
   (new-oauth-provider "VK.COM"
-#|
+
 ;;; ==================================================================
 
                       :init-values '((provider-name           . "Vk.com")

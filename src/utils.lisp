@@ -6,6 +6,7 @@
 
 (defun redirect (path)
   ;;  (break "~A" path)
+  (info-message (format nil "REDIRECTED: ~A" path))
   (hunchentoot:redirect path))
 
 (defun start-session ()

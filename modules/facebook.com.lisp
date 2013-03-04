@@ -1,6 +1,6 @@
 (in-package #:saluto)
 
-#|
+
 (eval-when (:load-toplevel)
   (new-oauth-provider "FACEBOOK.COM"
 
@@ -11,9 +11,10 @@
                                      ;;; There are two different hosts
                                      ;;; for OAuth requests on facebook.com
                                      ;;; That's why hosts are included in paths
-                                     (oauth-path              . "http://www.facebook.com/dialog/oauth")
+                                     (oauth-path              . "https://www.facebook.com/dialog/oauth")
                                      (query-params            . (("scope"  . "email")))
                                      (access-token-path       . "https://graph.facebook.com/oauth/access_token")
+				     (token-params            . ())
                                      (api-host                . "https://graph.facebook.com/"))
 
 ;;; ==================================================================
@@ -81,4 +82,3 @@
                                 :uid        uid
                                 :session    (session)
                                 :provider   "facebook.com")))))
-|#

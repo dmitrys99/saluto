@@ -3,6 +3,9 @@
 (defun make-provider (provider app-id app-private app-secret domain store-userinfo-fun)
   "Function creates instance of given provider"
   (info-message "In make-provider")
+  (info-message (format nil "provider: ~A" provider))
+  (info-message (format nil "*provider-list*: ~A" *provider-list*))
+  
   (let ((found (find provider *provider-list*)))
     ;; (break "~A: ~A" found *provider-list*)
     (when found

@@ -33,6 +33,7 @@
                              (sb-ext:string-to-octets str))))
 
 (defun request (params)
+  (info-message (format nil "REQUEST: ~A" params))
   (apply 'drakma:http-request params))
 
 (defun extract-access-token (provider-answer)

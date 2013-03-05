@@ -35,7 +35,8 @@
 (defun request (params)
   (info-message (format nil "REQUEST: ~A" params))
   (let ((res (apply 'drakma:http-request params)))
-    (info-message (format nil "REQUEST RES: ~A" res))))
+    (info-message (format nil "REQUEST RES: ~A" res))
+    res))
 
 (defun extract-access-token (provider-answer)
   (let ((res (jsown:val (jsown:parse provider-answer) "access_token")))

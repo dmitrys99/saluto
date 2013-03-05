@@ -22,6 +22,8 @@
    (query-params          :documentation "Append parameters to redirect query if needed.")
    (token-params          :documentation "List of parameter to access token query.")
    (receiver-path         :documentation "URI on our domain where to redirect on success or failure")
+   (encode-uri            :documentation "redirect_uri has to be encoded?"
+                          :initform nil)
 
    (store-userinfo-fun    :documentation "User defined function which stores user info data received from provider."
                           :initform nil)
@@ -59,7 +61,7 @@
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
 
     (info-message (format nil "Ready to push provider-kw: ~A" provider-kw))
-    
+    (info-message (format nil "provider-low outside backquote: ~A" provider-low))
     (push provider-kw *provider-list*)
 
     ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
@@ -182,16 +184,19 @@
                   (if (eql via :DATA)
                       (list :content (concatenate-params parameters))
                       (list :parameters parameters))))
+    (info-message (Format nil "prepare-access-token-request req: ~A" res))
     res))
 
-(defmethod full-receiver-path (oauth-2.0-module session-str)
-  (drakma:url-encode
-   (concatenate 'string
-                (slot-value oauth-2.0-module 'domain)
-                (format nil
-                        (slot-value oauth-2.0-module 'receiver-path)
-                        session-str))
-   :latin-1))
+(defmethod full-receiver-path ((module oauth-2.0-module) session-str)
+  
+  (let ((uri (concatenate 'string
+                          (slot-value module 'domain)
+                          (format nil
+                                  (slot-value module 'receiver-path)
+                                  session-str))))
+    (if (slot-value module 'encode-uri)
+        (drakma:url-encode uri :latin-1)
+        uri)))
 
 (defmethod store-userinfo (oauth-2.0-module userinfo)
   (let ((fn (slot-value oauth-2.0-module 'store-userinfo-fun)))

@@ -11,6 +11,7 @@
                                      (post-access-param-via   . :DATA)
                                      (access-token-method     . :POST)
                                      (query-params            . (("response_type"  . "code")))
+                                     (encode-uri              . t)
                                      (token-params            . (("grant_type"     . "authorization_code")))
                                      (access-token-path       . "/oauth/token"))
 

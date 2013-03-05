@@ -15,6 +15,7 @@
                                      (query-params            . (("scope"  . "email")))
                                      (access-token-path       . "https://graph.facebook.com/oauth/access_token")
 				     (token-params            . ())
+                                     (encode-uri              . nil)
                                      (api-host                . "https://graph.facebook.com/"))
 
 ;;; ==================================================================
@@ -38,10 +39,15 @@
                           (redirect "/"))
 
                         (let* ((rq (request (prepare-access-token-request module code)))
-                               (access-token (extract-access-token  rq))
+                               (access-token
+                                 (cdr
+                                  (split-sequence:split-sequence
+                                   #\=
+                                   (car
+                                    (split-sequence:SPLIT-SEQUENCE #\& rq)))))
                                (userinfo-request nil)
                                (userinfo nil))
-
+                          (info-message (format nil "access-token: ~A rq ~A" access-token rq))
                           (setf userinfo-request
                                 (prepare-userinfo-request module access-token))
                           (setf userinfo (request userinfo-request))

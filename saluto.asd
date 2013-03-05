@@ -8,6 +8,7 @@
   :depends-on (#:hunchentoot
                #:restas
                #:ironclad
+               #:split-sequence
                #:jsown
                #:cl-ppcre
                #:log4cl

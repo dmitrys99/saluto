@@ -1,7 +1,7 @@
 (in-package #:saluto)
 
 
-(eval-when (:load-toplevel)
+(eval-when (:load-toplevel :compile-toplevel)
   (new-oauth-provider "FACEBOOK.COM"
 
 ;;; ==================================================================
@@ -37,10 +37,10 @@
                           (logout)
                           (redirect "/"))
 
-                        (let ((access-token (extract-access-token
-                                             (request (prepare-access-token-request module code))))
-                              (userinfo-request nil)
-                              (userinfo nil))
+                        (let* ((rq (request (prepare-access-token-request module code)))
+                               (access-token (extract-access-token  rq))
+                               (userinfo-request nil)
+                               (userinfo nil))
 
                           (setf userinfo-request
                                 (prepare-userinfo-request module access-token))

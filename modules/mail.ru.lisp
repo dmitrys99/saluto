@@ -1,6 +1,6 @@
 (in-package #:saluto)
 
-(eval-when (:load-toplevel)
+(eval-when (:load-toplevel :compile-toplevel)
   (new-oauth-provider "MAIL.RU"
 
 ;;; ==================================================================

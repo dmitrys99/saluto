@@ -18,8 +18,8 @@
                 :serial t
                 :components ((:file "config")
                              (:file "base")
-                             (:file "oauth")
                              (:file "utils")
+                             (:file "oauth")
                              (:file "code")
                              (:file "starter")))
                (:module "modules"

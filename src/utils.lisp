@@ -34,7 +34,8 @@
 
 (defun request (params)
   (info-message (format nil "REQUEST: ~A" params))
-  (apply 'drakma:http-request params))
+  (let ((res (apply 'drakma:http-request params)))
+    (info-message (format nil "REQUEST RES: ~A" res))))
 
 (defun extract-access-token (provider-answer)
   (let ((res (jsown:val (jsown:parse provider-answer) "access_token")))
@@ -52,6 +53,7 @@
         (subseq r 0 (1- (length r)))
         r)))
 
+(defvar *logger* nil)
 
 (defun init-logger ()
 

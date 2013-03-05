@@ -112,6 +112,8 @@
            (setf (slot-value ,provider-module (car i))
                  (cdr i)))
          ;; receiver path is constructed at build-goto-path
+         (info-message (format nil "provider-low: ~A" ,provider-low))
+         
          (setf (slot-value ,provider-module 'receiver-path)
                (concatenate 'string (concatenate 'string "/auth/receiver/" ,provider-low "/~A/"))))
 
@@ -166,8 +168,8 @@
 
     (push (cons "client_id"     (slot-value module 'app-id))           parameters)
     (push (cons "client_secret" (slot-value module 'app-private-key))  parameters)
-    (push (cons "code" code)                                           parameters)
     (push (cons "redirect_uri"  (full-receiver-path module (session))) parameters)
+    (push (cons "code" code)                                           parameters)
 
     (setf parameters (reverse parameters))
 

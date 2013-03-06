@@ -40,7 +40,7 @@
 
                         (let* ((rq (request (prepare-access-token-request module code)))
                                (access-token
-                                 (cdr
+                                 (second
                                   (split-sequence:split-sequence
                                    #\=
                                    (car
@@ -81,6 +81,7 @@
                                             "url"))
                                (email      (jsown:val parsed-answer "email"))
                                (uid        (jsown:val parsed-answer "id")))
+                          (info-message (format nil "ANSWER: ~A" parsed-answer))
                           (list :first-name first-name
                                 :last-name  last-name
                                 :avatar     avatar

@@ -34,6 +34,7 @@
 (defgeneric execute (oauth-2.0-module package app-id secret-key))
 (defgeneric init-module (oauth-2.0-module))
 (defgeneric go-to-provider (oauth-2.0-module))
+(defgeneric attach-routes (oauth-2.0-module))
 (defgeneric receiver (oauth-2.0-module session code error?))
 (defgeneric build-goto-path (oauth-2.0-module session-str))
 (defgeneric full-receiver-path (oauth-2.0-module session-str))
@@ -49,24 +50,26 @@
                               receiver-fun
                               prepare-userinfo-fun
                               parse-userinfo-fun)
-
+;  (break "in new-oauth-provider")
+  
   (let* ((provider         (string-upcase name))
          (provider-low     (string-downcase name))
          (provider-kw      (intern provider 'keyword))
-         (provider-module  (intern (concatenate 'string provider +module-str+)         '#:saluto))
-         (provider-var     (intern (concatenate 'string "*" provider +module-str+ "*") '#:saluto))
-         (s-route-go       (intern (concatenate 'string provider ".GO-TO-PROVIDER")    '#:saluto))
-         (s-route-receiver (intern (concatenate 'string provider ".RECEIVER")          '#:saluto))
+         (provider-module  (intern (concatenate 'string provider +module-str+)         :saluto))
+         (provider-var     (intern (concatenate 'string "*" provider +module-str+ "*") :saluto))
+         (s-route-go       (intern (concatenate 'string provider ".GO-TO-PROVIDER")    :saluto))
+         (s-route-receiver (intern (concatenate 'string provider ".RECEIVER")          :saluto))
          (route-go         (concatenate 'string "/auth/go/" provider-low "/"))
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
 
     (info-message (format nil "Ready to push provider-kw: ~A" provider-kw))
     (info-message (format nil "provider-low outside backquote: ~A" provider-low))
-    (push provider-kw *provider-list*)
+    (push provider-kw *providers*)
 
     ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
 
     `(progn
+;       (break "Progn in macros")
        (defclass ,provider-module (oauth-2.0-module)())
        (defvar ,provider-var nil)
        (export ',provider-var)
@@ -76,12 +79,14 @@
        (export 'auth.logout)
        (export 'attach-routes)
 
-       (defmethod attach-routes (,provider-module)
+       (defmethod attach-routes ((module ,provider-module))
 
+;         (break "~A in attach-routes" module)
          (restas:define-route ,s-route-go (,route-go
                                            :method :get
                                            :content-type "text/html")
            (go-to-provider ,provider-var))
+;         (break "after goto provider")
 
          (setf (documentation ',s-route-go 'function)
                (format nil
@@ -106,34 +111,35 @@
                                            :content-type "text/html")
            (logout)
            (redirect "/"))
-
+;         (break "out attach-routes")
          t)
-
-       (defmethod init-module (,provider-module)
+       
+       (defmethod init-module ((module ,provider-module))
          (dolist (i ,init-values)
-           (setf (slot-value ,provider-module (car i))
+           (setf (slot-value module (car i))
                  (cdr i)))
          ;; receiver path is constructed at build-goto-path
          (info-message (format nil "provider-low: ~A" ,provider-low))
          
-         (setf (slot-value ,provider-module 'receiver-path)
+         (setf (slot-value module 'receiver-path)
                (concatenate 'string (concatenate 'string "/auth/receiver/" ,provider-low "/~A/"))))
 
-       (defmethod prepare-userinfo-request (,provider-module params)
+       (defmethod prepare-userinfo-request ((module ,provider-module) params)
          (let ((fn ,prepare-userinfo-fun))
-           (funcall fn ,provider-module params)))
+           (funcall fn module params)))
 
-       (defmethod parse-userinfo (,provider-module answer)
+       (defmethod parse-userinfo ((module ,provider-module) answer)
          (let ((fn ,parse-userinfo-fun))
-           (funcall fn ,provider-module answer)))
+           (funcall fn module answer)))
 
-       (defmethod go-to-provider (,provider-module)
+       (defmethod go-to-provider ((module ,provider-module))
+;         (break "in go-to-provider")
          (let ((fn ,goto-fun))
-           (funcall fn ,provider-module)))
+           (funcall fn module)))
 
-       (defmethod receiver (,provider-module session code error?)
+       (defmethod receiver ((module ,provider-module) session code error?)
          (let ((fn ,receiver-fun))
-           (funcall fn ,provider-module session code error?))))))
+           (funcall fn module session code error?))))))
 
 (defmethod build-goto-path ((module oauth-2.0-module) session-str)
   (assert (slot-value module 'domain))

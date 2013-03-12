@@ -1,6 +1,6 @@
 (in-package #:saluto)
 
-(defparameter *provider-list* ())
+(defparameter *providers* ())
 
 (defparameter +module-str+ "-MODULE")
 

@@ -4,14 +4,14 @@
   "Function creates instance of given provider"
   (info-message "In make-provider")
   (info-message (format nil "provider: ~A" provider))
-  (info-message (format nil "*provider-list*: ~A" *provider-list*))
+  (info-message (format nil "*providers*: ~A" *providers*))
   
-  (let ((found (find provider *provider-list*)))
-    ;; (break "~A: ~A" found *provider-list*)
+  (let ((found (find provider *providers*)))
+;    (break "~A: ~A" found *providers*)
     (when found
       (let* ((provider-str (string found))
              (module (concatenate 'string provider-str +module-str+))
-             (variable (intern (concatenate 'string "*" module "*") '#:saluto))
+             (variable (intern (concatenate 'string "*" module "*") :saluto))
              (value (symbol-value variable))
              (instance nil))
 
@@ -19,7 +19,7 @@
         
         (when (not value)
 
-          (setf instance                         (make-instance (intern module '#:saluto)))
+          (setf instance                         (make-instance (intern module :saluto)))
 
           (info-message (format nil "instance: ~A" instance))
           

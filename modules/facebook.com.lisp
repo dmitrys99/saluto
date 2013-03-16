@@ -1,7 +1,7 @@
 (in-package #:saluto)
 
 ;(break "one")
-(eval-when (:load-toplevel)
+(eval-when (:load-toplevel :execute)
  ;(break "two")
   (new-oauth-provider "FACEBOOK.COM"
 

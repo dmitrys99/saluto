@@ -106,11 +106,15 @@
                        "This RESTAS route function receive authorization answer from provider '~A'."
                        ,name))
 
-         (restas:define-route auth.logout ("/auth/logout/"
+         (restas:define-route auth.logout ("/auth/logout"
                                            :method :get
                                            :content-type "text/html")
            (logout)
            (redirect "/"))
+         (restas:define-route auth.logout/ ("/auth/logout/"
+                                            :method :get
+                                            :content-type "text/html")
+           (redirect "/auth/logout"))
 ;         (break "out attach-routes")
          t)
        

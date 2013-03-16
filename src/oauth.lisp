@@ -77,6 +77,7 @@
        (export ',s-route-go)
        (export ',s-route-receiver)
        (export 'auth.logout)
+       (export 'auth.logout/)
        (export 'attach-routes)
 
        (defmethod attach-routes ((module ,provider-module))

@@ -62,12 +62,6 @@
          (route-go         (concatenate 'string "/auth/go/" provider-low "/"))
          (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
 
-    (info-message (format nil "Ready to push provider-kw: ~A" provider-kw))
-    (info-message (format nil "provider-low outside backquote: ~A" provider-low))
-    (push provider-kw *providers*)
-
-    ;(break "~A ~A ~A ~A ~A" provider-var provider-kw provider-module s-route-go s-route-receiver)
-
     `(progn
 ;       (break "Progn in macros")
        (defclass ,provider-module (oauth-2.0-module)())
@@ -79,6 +73,10 @@
        (export 'auth.logout)
        (export 'auth.logout/)
        (export 'attach-routes)
+
+       (info-message (format nil "Ready to push provider-kw: ~A" ,provider-kw))
+       (info-message (format nil "provider-low outside backquote: ~A" ,provider-low))
+       (push ,provider-kw *providers*)
 
        (defmethod attach-routes ((module ,provider-module))
 

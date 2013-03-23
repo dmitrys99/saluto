@@ -75,15 +75,14 @@
 	(declare (ignore b))a)
       nil))
 
-;;;; TODO DRY!
-(defun debug-message (message)
-  (log:debug *logger* (untilde message)))
+(defmacro messages-defun (&rest message-types)
+  (cons 'progn
+        (loop
+           for message-type in message-types
+           for fn-name = (intern (format nil "~a-MESSAGE" message-type) :saluto)
+           for log-fn  = (intern (string message-type) :log)
+           collecting
+             `(defun ,fn-name (message)
+                (,log-fn *logger* (untilde message))))))
 
-(defun error-message (message)
-  (log:error *logger* (untilde message)))
-
-(defun info-message (message)
-  (log:info *logger* (untilde message)))
-
-(defun warning-message (message)
-  (log:warn *logger* (untilde message)))
+(messages-defun :debug :error :info :warning)

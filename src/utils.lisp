@@ -1,5 +1,12 @@
 (in-package #:saluto)
 
+(defun remove-zeros-from-string (array)
+  "This function is needed by google.com provider,
+because the answer of google.com for unknown reasons contains sudden chunks of zeros."
+  (coerce (loop for x across array unless (zerop x)
+               collect (code-char x))
+          'string))
+
 (defun session ()
   (when hunchentoot:*session*
     (slot-value hunchentoot:*session* 'hunchentoot::session-string)))

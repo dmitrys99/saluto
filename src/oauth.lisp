@@ -49,7 +49,11 @@
                               goto-fun
                               receiver-fun
                               prepare-userinfo-fun
-                              parse-userinfo-fun)
+                              parse-userinfo-fun
+                              (anti-csrf :unique-redirect-uri)) ;; Possible values:
+                                                                ;; :UNIQUE-REDIRECT-URI - redirect uri will be unique for every user.
+                                                                ;; :PASS-STATE-STRING -  the unique string will be passed to server through go-to-provider route.
+                                                                ;;                       It must then match the resulting redirect uri 'state' parameter.
 ;  (break "in new-oauth-provider")
   
   (let* ((provider         (string-upcase name))
@@ -60,7 +64,7 @@
          (s-route-go       (intern (concatenate 'string provider ".GO-TO-PROVIDER")    :saluto))
          (s-route-receiver (intern (concatenate 'string provider ".RECEIVER")          :saluto))
          (route-go         (concatenate 'string "/auth/go/" provider-low "/"))
-         (route-receiver   (concatenate 'string "/auth/receiver/" provider-low "/:session/")))
+         (route-receiver   (format nil "/auth/receiver/~a/~:[~;:session/~]" provider-low (eq anti-csrf :unique-redirect-uri))))
 
     `(progn
 ;       (break "Progn in macros")
@@ -96,7 +100,12 @@
                                                  :method :get
                                                  :content-type "text/html")
            (receiver ,provider-var
-                     session
+                     ,(case anti-csrf
+                            (:unique-redirect-uri
+                             'session)
+                            (:pass-state-string
+                             '(hunchentoot:parameter "state"))
+                            (otherwise nil))
                      (hunchentoot:parameter "code")
                      (hunchentoot:parameter "error")))
 
@@ -125,7 +134,10 @@
          (info-message (format nil "provider-low: ~A" ,provider-low))
          
          (setf (slot-value module 'receiver-path)
-               (concatenate 'string (concatenate 'string "/auth/receiver/" ,provider-low "/~A/"))))
+               (concatenate 'string "/auth/receiver/" ,provider-low
+                            ,(if (eq anti-csrf :unique-redirect-uri)
+                                 "/~A/"
+                                 "/~*"))))
 
        (defmethod prepare-userinfo-request ((module ,provider-module) params)
          (let ((fn ,prepare-userinfo-fun))
@@ -142,31 +154,35 @@
 
        (defmethod receiver ((module ,provider-module) session code error?)
          (let ((fn ,receiver-fun))
-           (funcall fn module session code error?))))))
+           (funcall fn module session code error?)))
 
-(defmethod build-goto-path ((module oauth-2.0-module) session-str)
-  (assert (slot-value module 'domain))
-  (assert (slot-value module 'app-id))
-  (assert (or (slot-value module 'app-secret-key)
-              (slot-value module 'app-private-key)))
-  (assert (slot-value module 'receiver-path))
-  (let ((res ""))
-    (setf res
-          (concatenate 'string
-                       (slot-value module 'oauth-host)
-                       (slot-value module 'oauth-path)
-                       "?"
-                       "client_id="
-                       (slot-value module 'app-id)))
+       (defmethod build-goto-path ((module ,provider-module) session-str)
+         (assert (slot-value module 'domain))
+         (assert (slot-value module 'app-id))
+         (assert (or (slot-value module 'app-secret-key)
+                     (slot-value module 'app-private-key)))
+         (assert (slot-value module 'receiver-path))
+         (let ((res ""))
+           (setf res
+                 (concatenate 'string
+                              (slot-value module 'oauth-host)
+                              (slot-value module 'oauth-path)
+                              "?"
+                              "client_id="
+                              (slot-value module 'app-id)))
+    
+           (dolist (i (slot-value module 'query-params))
+             (setf res (concatenate 'string res
+                                    "&" (car i) "=" (cdr i))))
+           
+           ,(when (eq anti-csrf :pass-state-string)
+                  '(setf res (concatenate 'string res
+                                          "&" "state=" session-str)))
 
-    (dolist (i (slot-value module 'query-params))
-      (setf res (concatenate 'string res
-                             "&" (car i) "=" (cdr i))))
-
-    (setf res (concatenate 'string res
-                           "&" "redirect_uri="
-                           (full-receiver-path module session-str)))
-    res))
+           (setf res (concatenate 'string res
+                                  "&" "redirect_uri="
+                                  (full-receiver-path module session-str)))
+           res)))))
 
 (defmethod prepare-access-token-request ((module oauth-2.0-module) code)
   (let ((parameters (slot-value module 'token-params))

@@ -27,6 +27,7 @@
                 :serial t
                 :components ((:file "mail.ru")
                              (:file "vk.com")
+                             (:file "google.com")
                              (:file "facebook.com")
                              (:file "twitter.com")))))
 

@@ -1,12 +1,10 @@
 (in-package #:saluto)
 
-;(break "one")
 (eval-when (:load-toplevel :execute)
- ;(break "two")
   (new-oauth-provider "FACEBOOK.COM"
 
 ;;; ==================================================================
-                      
+
                       :init-values '((provider-name           . "facebook.com")
                                      (oauth-host              . "")
                                      ;;; There are two different hosts
@@ -15,7 +13,7 @@
                                      (oauth-path              . "https://www.facebook.com/dialog/oauth")
                                      (query-params            . (("scope"  . "email")))
                                      (access-token-path       . "https://graph.facebook.com/oauth/access_token")
-				     (token-params            . ())
+                                     (token-params            . ())
                                      (encode-uri              . nil)
                                      (api-host                . "https://graph.facebook.com/"))
 
@@ -55,7 +53,7 @@
                           (let ((parsed-userinfo (parse-userinfo module userinfo)))
                             (store-userinfo module parsed-userinfo)))
                         (redirect "/"))
-                      
+
 ;;; ==================================================================
 
                       :prepare-userinfo-fun
@@ -70,7 +68,8 @@
 
                       :parse-userinfo-fun
                       (alexandria:named-lambda parse-userinfo-fun (module answer)
-                        (let* ((parsed-answer (jsown:parse answer))
+                        (declare (ignore module))
+                        (let* ((parsed-answer (jsown:parse (sb-ext:octets-to-string answer)))
                                (first-name (jsown:val parsed-answer "first_name"))
                                (last-name  (jsown:val parsed-answer "last_name"))
                                (avatar     (jsown:val
@@ -82,7 +81,7 @@
                                             "url"))
                                (email      (jsown:val parsed-answer "email"))
                                (uid        (jsown:val parsed-answer "id")))
-                          (info-message (format nil "ANSWER: ~A" parsed-answer))
+                          ;(info-message (format nil "ANSWER: ~A" parsed-answer))
                           (list :first-name first-name
                                 :last-name  last-name
                                 :avatar     avatar

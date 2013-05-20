@@ -75,11 +75,11 @@
                       :parse-userinfo-fun
                       (alexandria:named-lambda parse-userinfo-fun (module answer)
                         (let* ((parsed-answer (first (jsown:parse answer)))
-                               (first-name (jsown:val parsed-answer "first_name"))
-                               (last-name  (jsown:val parsed-answer "last_name"))
-                               (avatar     (jsown:val parsed-answer "pic_22"))
-                               (email      (jsown:val parsed-answer "email"))
-                               (uid        (jsown:val parsed-answer "uid")))
+                               (first-name (json-val parsed-answer "first_name"))
+                               (last-name  (json-val parsed-answer "last_name"))
+                               (avatar     (json-val parsed-answer "pic_22"))
+                               (email      (json-val parsed-answer "email"))
+                               (uid        (json-val parsed-answer "uid")))
                           (list :first-name first-name
                                 :last-name  last-name
                                 :avatar     avatar

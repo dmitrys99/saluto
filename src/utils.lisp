@@ -93,3 +93,10 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
                 (,log-fn *logger* (untilde message))))))
 
 (messages-defun :debug :error :info :warning)
+
+(defun json-val (obj key)
+  (handler-case
+      (jsown:val obj key)
+    (error (c)
+      (declare (ignore c))
+      "")))

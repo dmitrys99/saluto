@@ -70,17 +70,17 @@
                       (alexandria:named-lambda parse-userinfo-fun (module answer)
                         (declare (ignore module))
                         (let* ((parsed-answer (jsown:parse (sb-ext:octets-to-string answer)))
-                               (first-name (jsown:val parsed-answer "first_name"))
-                               (last-name  (jsown:val parsed-answer "last_name"))
-                               (avatar     (jsown:val
-                                            (jsown:val
-                                             (jsown:val
+                               (first-name (json-val parsed-answer "first_name"))
+                               (last-name  (json-val parsed-answer "last_name"))
+                               (avatar     (json-val
+                                            (json-val
+                                             (json-val
                                               parsed-answer
                                               "picture")
                                              "data")
                                             "url"))
-                               (email      (jsown:val parsed-answer "email"))
-                               (uid        (jsown:val parsed-answer "id")))
+                               (email      (json-val parsed-answer "email"))
+                               (uid        (json-val parsed-answer "id")))
                           ;(info-message (format nil "ANSWER: ~A" parsed-answer))
                           (list :first-name first-name
                                 :last-name  last-name

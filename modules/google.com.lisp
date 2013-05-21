@@ -77,7 +77,7 @@
                                  (octets-to-string (string-to-octets
                                                     (json-val parsed-answer "family_name")
                                                     :EXTERNAL-FORMAT :LATIN-1)
-                                                   :EXTERNAL-FORMAT :UTF-8)))
+                                                   :EXTERNAL-FORMAT :UTF-8))
                                (avatar (json-val parsed-answer "picture"))
                                (email (json-val parsed-answer "email"))
                                (uid (json-val parsed-answer "id")))
@@ -88,4 +88,4 @@
                                 :email email
                                 :uid uid
                                 :session (session)
-                                :provider "Google.com"))))) 
+                                :provider "Google.com")))))

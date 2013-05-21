@@ -68,16 +68,19 @@
                         (let* ((parsed-answer (jsown:parse answer))
 
                                (first-name
-                                 (octets-to-string (string-to-octets
-                                                    (json-val parsed-answer "given_name")
-                                                    :EXTERNAL-FORMAT :LATIN-1)
-                                                   :EXTERNAL-FORMAT :UTF-8))
+                                 (sb-ext:octets-to-string
+                                  (sb-ext:string-to-octets
+                                   (json-val parsed-answer "given_name")
+                                   :EXTERNAL-FORMAT :LATIN-1)
+                                  :EXTERNAL-FORMAT :UTF-8))
 
                                (last-name
-                                 (octets-to-string (string-to-octets
-                                                    (json-val parsed-answer "family_name")
-                                                    :EXTERNAL-FORMAT :LATIN-1)
-                                                   :EXTERNAL-FORMAT :UTF-8))
+                                 (sb-ext:octets-to-string
+                                  (sb-ext:string-to-octets
+                                   (json-val parsed-answer "family_name")
+                                   :EXTERNAL-FORMAT :LATIN-1)
+                                  :EXTERNAL-FORMAT :UTF-8))
+
                                (avatar (json-val parsed-answer "picture"))
                                (email (json-val parsed-answer "email"))
                                (uid (json-val parsed-answer "id")))

@@ -40,17 +40,22 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
                              (sb-ext:string-to-octets str))))
 
 (defun request (params)
-  (break "~A" params)
+  ;;(break "request (params): ~A" params)
   (info-message (format nil "REQUEST: ~A" params))
   (let ((res (apply 'drakma:http-request params)))
     (info-message (format nil "REQUEST RES: ~A" res))
-    (break "~A" res)
+    ;;(break "request (res): ~A" res)
     res))
 
 (defun extract-access-token (provider-answer)
-  (break "EAT: ~A" provider-answer)
-  (let ((res (jsown:val (jsown:parse provider-answer) "access_token")))
-    res))
+;;  (break "EAT: ~A" provider-answer)
+  (let* ((pa (jsown:parse provider-answer))
+         (res (jsown:val pa "access_token"))
+         (user_id (json-val pa "user_id")))
+    (if (and (stringp user_id) (string= user_id "")) 
+        res
+        ;; vk.com returns user_id field with access token.
+        (list res user_id))))
 
 (defun sort-params (params)
   (sort params 'string< :key 'car))

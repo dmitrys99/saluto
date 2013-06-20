@@ -61,17 +61,18 @@
 
 
 (defun parse-userinfo-fun (module answer)
-  (let* ((parsed-answer (first (jsown:parse (sb-ext:octets-to-string answer))))
+  (let* ((decoded (sb-ext:octets-to-string answer))
+         (parsed-answer (first (json-val (jsown:parse decoded) "response")))
          (first-name (json-val parsed-answer "first_name"))
          (last-name  (json-val parsed-answer "last_name"))
          (avatar     (json-val parsed-answer "photo_max")) ;; may be just "photo"
          ;; (email      (jsown:val parsed-answer "email"))
-         (uid        (json-val parsed-answer "uid")))
-    (break "~A" parsed-answer)
+         (uid        (write-to-string (json-val parsed-answer "uid"))))
+;    (break "decoded: ~A" decoded)
+;    (break "parsed-answer: ~A" parsed-answer)    
     (list :first-name first-name
           :last-name  last-name
           :avatar     avatar
-          ;; :email      email
           :uid        uid
           :session    (session)
           :provider   "vk.com")))
@@ -79,6 +80,7 @@
 (defun prepare-userinfo-fun (module auth-key)
   (list (concatenate 'string (api-host module) "users.get")
         :parameters (list (cons "fields" "photo_max")
-                          (cons "access_token" auth-key))
+                          (cons "access_token" (first auth-key))
+                          (cons "uids" (write-to-string (second auth-key))))
         :content-length t
         :method :get))

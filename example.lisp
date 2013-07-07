@@ -1,6 +1,4 @@
-(ql:quickload "cl-who")
-(ql:quickload "restas")
-(ql:quickload "saluto")
+(ql:quickload '("cl-who" "restas" "saluto"))
 
 (restas:define-module #:restas.test-saluto
   (:use #:cl))

@@ -73,7 +73,7 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
 
 (defun init-logger ()
 
-  (setf *logger* (log:make-logger))
+  (setf *logger* (log:category))
 
   (log:config *logger*
 	      :immediate-flush t

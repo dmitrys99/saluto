@@ -12,8 +12,6 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
     (slot-value hunchentoot:*session* 'hunchentoot::session-string)))
 
 (defun redirect (path)
-  ;;  (break "~A" path)
-  (info-message (format nil "REDIRECTED: ~A" path))
   (hunchentoot:redirect path))
 
 (defun start-session ()
@@ -40,11 +38,7 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
                              (sb-ext:string-to-octets str))))
 
 (defun request (params)
-  ;;(break "request (params): ~A" params)
-  (info-message (format nil "REQUEST: ~A" params))
   (let ((res (apply 'drakma:http-request params)))
-    (info-message (format nil "REQUEST RES: ~A" res))
-    ;;(break "request (res): ~A" res)
     res))
 
 (defun extract-access-token (provider-answer)
@@ -68,39 +62,6 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
     (if delimiter
         (subseq r 0 (1- (length r)))
         r)))
-
-(defvar *logger* nil)
-
-(defun init-logger ()
-
-  (setf *logger* (log:category))
-
-  (log:config *logger*
-	      :immediate-flush t
-	      :sane
-	      :daily   (concatenate 'string *saluto-log-prefix* "/" *saluto-log*)
-	      :pattern "SLT: %D{%Y-%m-%d %H:%M:%S} [%p] %t %m%n")
-
-  (info-message "Saluto logging started"))
-
-(defun untilde (s)
-  (if (stringp s)
-      (multiple-value-bind (a b)
-	  (cl-ppcre:regex-replace-all "~" s "~1~")
-	(declare (ignore b))a)
-      nil))
-
-(defmacro messages-defun (&rest message-types)
-  (cons 'progn
-        (loop
-           for message-type in message-types
-           for fn-name = (intern (format nil "~a-MESSAGE" message-type) :saluto)
-           for log-fn  = (intern (string message-type) :log)
-           collecting
-             `(defun ,fn-name (message)
-                (,log-fn *logger* (untilde message))))))
-
-(messages-defun :debug :error :info :warning)
 
 (defun json-val (obj key)
   (handler-case

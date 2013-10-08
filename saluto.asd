@@ -11,7 +11,6 @@
                #:split-sequence
                #:jsown
                #:cl-ppcre
-               #:log4cl
                #:drakma)
   :serial t
   :components ((:file "package")
@@ -21,8 +20,7 @@
                              (:file "base")
                              (:file "utils")
                              (:file "oauth")
-                             (:file "code")
-                             (:file "starter")))
+                             (:file "code")))
                (:module "modules"
                 :serial t
                 :components ((:file "mail.ru")

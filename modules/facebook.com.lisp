@@ -46,7 +46,6 @@
                                     (split-sequence:SPLIT-SEQUENCE #\& rq)))))
                                (userinfo-request nil)
                                (userinfo nil))
-                          (info-message (format nil "access-token: ~A rq ~A" access-token rq))
                           (setf userinfo-request
                                 (prepare-userinfo-request module access-token))
                           (setf userinfo (request userinfo-request))
@@ -81,7 +80,6 @@
                                             "url"))
                                (email      (json-val parsed-answer "email"))
                                (uid        (json-val parsed-answer "id")))
-                          ;(info-message (format nil "ANSWER: ~A" parsed-answer))
                           (list :first-name first-name
                                 :last-name  last-name
                                 :avatar     avatar

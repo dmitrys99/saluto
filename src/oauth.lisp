@@ -67,7 +67,6 @@
          (route-receiver   (format nil "/auth/receiver/~a/~:[~;:session/~]" provider-low (eq anti-csrf :unique-redirect-uri))))
 
     `(progn
-;       (break "Progn in macros")
        (defclass ,provider-module (oauth-2.0-module)())
        (defvar ,provider-var nil)
        (export ',provider-var)
@@ -78,18 +77,14 @@
        (export 'auth.logout/)
        (export 'attach-routes)
 
-       (info-message (format nil "Ready to push provider-kw: ~A" ,provider-kw))
-       (info-message (format nil "provider-low outside backquote: ~A" ,provider-low))
        (push ,provider-kw *providers*)
 
        (defmethod attach-routes ((module ,provider-module))
 
-;         (break "~A in attach-routes" module)
          (restas:define-route ,s-route-go (,route-go
                                            :method :get
                                            :content-type "text/html")
            (go-to-provider ,provider-var))
-;         (break "after goto provider")
 
          (setf (documentation ',s-route-go 'function)
                (format nil
@@ -131,8 +126,6 @@
            (setf (slot-value module (car i))
                  (cdr i)))
          ;; receiver path is constructed at build-goto-path
-         (info-message (format nil "provider-low: ~A" ,provider-low))
-         
          (setf (slot-value module 'receiver-path)
                (concatenate 'string "/auth/receiver/" ,provider-low
                             ,(if (eq anti-csrf :unique-redirect-uri)
@@ -209,7 +202,6 @@
                   (if (eql via :DATA)
                       (list :content (concatenate-params parameters))
                       (list :parameters parameters))))
-    (info-message (Format nil "prepare-access-token-request req: ~A" res))
     res))
 
 (defmethod full-receiver-path ((module oauth-2.0-module) session-str)

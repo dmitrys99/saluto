@@ -1,3 +1,5 @@
 (restas:define-module #:saluto
-  (:use :cl :drakma)
-  (:export #:attach-saluto))
+  (:use #:cl)
+  (:export #:*main*
+           #:*store-userinfo-fun*
+           #:*providers*))

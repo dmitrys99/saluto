@@ -1,4 +1,4 @@
-(ql:quickload '("cl-who" "restas" "another-saluto"))
+(ql:quickload '("cl-who" "restas" "saluto"))
 
 (restas:define-module #:restas.test-saluto
   (:use #:cl))
@@ -10,12 +10,12 @@
 (restas:mount-module saluto (#:saluto)
   (:url "auth/")
   (:inherit-parent-context t)
-  (saluto::*providers* (list
+  (saluto:*providers* (list
                         (make-instance 'saluto::oauth2-google.com
                                        :name "google.com"
                                        :app-id "845600361011.apps.googleusercontent.com"
                                        :app-private-key "G90eET_kGV6kTLYyrhTvqBP3")))
-  (saluto::*store-userinfo-fun*
+  (saluto:*store-userinfo-fun*
    (lambda (info)
      (setf (gethash hunchentoot:*session* *users*) info))))
 
@@ -40,17 +40,17 @@
                    "Login with GOOGLE.COM"))
            (:p "Not logged in")))))))
 
-(restas:define-route receiver.mail.ru ("receiver.html")
-  "<html>
-<body>
-<script src=\"http://connect.mail.ru/js/loader.js\"></script>
-<script>
-mailru.loader.require('receiver', function(){
-	mailru.receiver.init();
-})
-</script>
-</body>
-</html> 
-")
+;; (restas:define-route receiver.mail.ru ("receiver.html")
+;;   "<html>
+;; <body>
+;; <script src=\"http://connect.mail.ru/js/loader.js\"></script>
+;; <script>
+;; mailru.loader.require('receiver', function(){
+;; 	mailru.receiver.init();
+;; })
+;; </script>
+;; </body>
+;; </html>
+;; ")
 
 (restas:start '#:restas.test-saluto :port 8080)

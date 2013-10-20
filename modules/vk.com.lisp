@@ -1,90 +1,86 @@
 (in-package #:saluto)
 
-#|
 (eval-when (:load-toplevel)
   (new-oauth-provider "VK.COM"
 
 ;;; ==================================================================
 
-                      :init-values '((provider-name           . "Vk.com")
-                                     (oauth-host              . "https://oauth.vk.com/")
-                                     (api-host                . "http://www.appsmail.ru/platform/api")
-                                     ;(post-access-param-via   . )
-                                     (access-token-method     . :GET)
-                                     (query-params            . (("response_type"  . "code")))
-                                     (token-params            . (("grant_type"     . "authorization_code")))
-                                     (access-token-path       . "/oauth/token"))
+                      :init-values '((provider-name           . "vk.com")
+                                     (oauth-host              . "https://oauth.vk.com")
+                                     (oauth-path              . "/authorize")
+                                     (api-host                . "https://api.vk.com/method/")
+                                     (query-params            . (("response_type"  . "code")
+                                                                 #|("scope"  . "photos,notify")|#))
+                                     (token-params            . ())
+                                     (access-token-path       . "/access_token"))
 
 ;;; ==================================================================
 
-                      :goto-fun
-                      (alexandria:named-lambda goto-fun (module)
-                        (if (not (session))
-                            (progn
-                              (start-session)
-                              (redirect (build-goto-path module (session))))
-                            (redirect "/")))
+                      :goto-fun 'goto-fun
 
 ;;; ==================================================================
 
-                      :receiver-fun
-                      (alexandria:named-lambda receiver-fun (module session code error?)
-                        (when (invalid-receiver-params? code
-                                                        session
-                                                        error?)
-                          (logout)
-                          (redirect "/"))
+                      :receiver-fun 'rec-fun
+                      
+;;; ==================================================================
 
-                        (let ((auth-key (extract-authorization-key
-                                         (request (prepare-access-token-request module code))))
-                              (userinfo-request nil)
-                              (userinfo nil))
-
-                          (setf userinfo-request
-                                (prepare-userinfo-request module (list (cons "app_id"      (app-id module))
-                                                                       (cons "method"      "users.getInfo")
-                                                                       (cons "secure"      "1")
-                                                                       (cons "session_key" auth-key))))
-                          (setf userinfo (request userinfo-request))
-                          (let ((parsed-userinfo (parse-userinfo module userinfo)))
-                            (store-userinfo module parsed-userinfo)))
-                        (redirect "/"))
+                      :prepare-userinfo-fun 'prepare-userinfo-fun
 
 ;;; ==================================================================
 
-                      :prepare-userinfo-fun
-                      (alexandria:named-lambda prepare-user-info-fun (module params)
-                        (let* ((parameters (sort-params params))
-                               (params-reverse (reverse parameters))
-                               (con-params (concatenate-params parameters :delimiter nil))
-                               (sig "")
-                               (2sig (concatenate 'string
-                                                  con-params
-                                                  (app-secret module))))
-                          ;; (break "con-params: ~A~%secret: ~A~%2sig: ~A" con-params (app-secret module) 2sig)
-                          (setf sig (md5 2sig))
-                          (push (cons "sig" sig) params-reverse)
-                          ;; (break "~A" (reverse params-reverse))
-                          (list (api-host module)
-                                :parameters (reverse params-reverse)
-                                :content-length t
-                                :method :get)))
+                      :parse-userinfo-fun 'parse-userinfo-fun))
 
-;;; ==================================================================
 
-                      :parse-userinfo-fun
-                      (alexandria:named-lambda parse-userinfo-fun (module answer)
-                        (let* ((parsed-answer (first (jsown:parse answer)))
-                               (first-name (jsown:val parsed-answer "first_name"))
-                               (last-name  (jsown:val parsed-answer "last_name"))
-                               (avatar     (jsown:val parsed-answer "pic_22"))
-                               (email      (jsown:val parsed-answer "email"))
-                               (uid        (jsown:val parsed-answer "uid")))
-                          (list :first-name first-name
-                                :last-name  last-name
-                                :avatar     avatar
-                                :email      email
-                                :uid        uid
-                                :session    (session)
-                                :provider   "Mail.Ru")))))
-|#
+(defun goto-fun (module)
+  (if (not (session))
+      (progn
+        (start-session)
+        (redirect (build-goto-path module (session))))
+      (redirect "/")))
+
+
+(defun rec-fun (module session code error?)
+  (when (invalid-receiver-params? code
+                                  session
+                                  error?)
+    (logout)
+    (redirect "/"))
+  
+  (let* ((rq (request (prepare-access-token-request module code)))
+         (access-token (extract-access-token
+                        (sb-ext:octets-to-string rq)))
+         (userinfo-request nil)
+         (userinfo nil))
+    ;; (break "~A" rq)
+    (setf userinfo-request
+          (prepare-userinfo-request module access-token))
+    (setf userinfo (request userinfo-request))
+    (let ((parsed-userinfo (parse-userinfo module userinfo)))
+      (store-userinfo module parsed-userinfo)))
+  (redirect "/"))
+
+
+(defun parse-userinfo-fun (module answer)
+  (let* ((decoded (sb-ext:octets-to-string answer))
+         (parsed-answer (first (json-val (jsown:parse decoded) "response")))
+         (first-name (json-val parsed-answer "first_name"))
+         (last-name  (json-val parsed-answer "last_name"))
+         (avatar     (json-val parsed-answer "photo_max")) ;; may be just "photo"
+         ;; (email      (jsown:val parsed-answer "email"))
+         (uid        (write-to-string (json-val parsed-answer "uid"))))
+;    (break "decoded: ~A" decoded)
+;    (break "parsed-answer: ~A" parsed-answer)    
+    (list :first-name first-name
+          :last-name  last-name
+          :avatar     avatar
+          :uid        uid
+          :session    (session)
+          :provider   "vk.com")))
+
+(defun prepare-userinfo-fun (module auth-key)
+  (list (concatenate 'string (api-host module) "users.get")
+        :parameters (list (cons "fields" "photo_max")
+                          (cons "access_token" (first auth-key))
+                          (cons "uids" (write-to-string (second auth-key))))
+        :content-length t
+        :method :get))

@@ -66,15 +66,29 @@
                       :parse-userinfo-fun
                       (alexandria:named-lambda parse-userinfo-fun (module answer)
                         (let* ((parsed-answer (jsown:parse answer))
-                               (first-name (jsown:val parsed-answer "given_name"))
-                               (last-name (jsown:val parsed-answer "family_name"))
-                               (avatar (jsown:val parsed-answer "picture"))
-                               (email (jsown:val parsed-answer "email"))
-                               (uid (jsown:val parsed-answer "id")))
+
+                               (first-name
+                                 (sb-ext:octets-to-string
+                                  (sb-ext:string-to-octets
+                                   (json-val parsed-answer "given_name")
+                                   :EXTERNAL-FORMAT :LATIN-1)
+                                  :EXTERNAL-FORMAT :UTF-8))
+
+                               (last-name
+                                 (sb-ext:octets-to-string
+                                  (sb-ext:string-to-octets
+                                   (json-val parsed-answer "family_name")
+                                   :EXTERNAL-FORMAT :LATIN-1)
+                                  :EXTERNAL-FORMAT :UTF-8))
+
+                               (avatar (json-val parsed-answer "picture"))
+                               (email (json-val parsed-answer "email"))
+                               (uid (json-val parsed-answer "id")))
+                          
                           (list :first-name first-name
                                 :last-name last-name
                                 :avatar avatar
                                 :email email
                                 :uid uid
                                 :session (session)
-                                :provider "Google.com"))))) 
+                                :provider "Google.com")))))

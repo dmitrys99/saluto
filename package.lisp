@@ -2,4 +2,5 @@
   (:use #:cl)
   (:export #:*main*
            #:*store-userinfo-fun*
-           #:*providers*))
+           #:*providers*
+           #:oauth2-google.com))

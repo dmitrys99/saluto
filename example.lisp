@@ -11,7 +11,7 @@
   (:url "auth/")
   (:inherit-parent-context t)
   (saluto:*providers* (list
-                        (make-instance 'saluto::oauth2-google.com
+                        (make-instance 'saluto:oauth2-google.com
                                        :name "google.com"
                                        :app-id "845600361011.apps.googleusercontent.com"
                                        :app-private-key "G90eET_kGV6kTLYyrhTvqBP3")))

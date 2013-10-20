@@ -44,7 +44,7 @@
 (defun attach-saluto (provider-list store-fun)
   (assert (listp provider-list))
   ;; (break "attach-saluto (package): ~A" (package-name package))
-  (break "attach-saluto provider-list: ~A" provider-list)
+  ;; (break "attach-saluto provider-list: ~A" provider-list)
   (dolist (i provider-list)
     (let ((module      (getf i :module))
           (app-id      (getf i :app-id))

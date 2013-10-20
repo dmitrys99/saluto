@@ -86,12 +86,12 @@
 
        (defmethod attach-routes ((module ,provider-module))
 
-         (break "~A in attach-routes" module)
+         ;; (break "~A in attach-routes" module)
          (restas:define-route ,s-route-go (,route-go
                                            :method :get
                                            :content-type "text/html")
            (go-to-provider ,provider-var))
-         (break "after goto provider")
+         ;; (break "after goto provider")
 
          (setf (documentation ',s-route-go 'function)
                (format nil

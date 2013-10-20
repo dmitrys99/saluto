@@ -5,12 +5,10 @@
 Should be replaced when mounting module")
 
 (defun parse-provider (provider-name)
-  (or (find provider-name *providers* :key #'name :test #'string=)
+  (or (find provider-name (print *providers*) :key #'name :test #'string=)
       (error "SALUTO: No such provider ~A" provider-name)))
 
-(restas:define-route login-with ("goto/:provider/"
-                                 :method :get
-                                 :content-type "text/html")
+(restas:define-route login-with ("goto/:provider/" :method :get)
 ;  (:sift-variables (provider #'parse-provider))
   (:additional-variables (redirect-uri (hunchentoot:parameter "redirect")))
   ;; This REDIRECT-URI means just target page after successful login
@@ -25,8 +23,7 @@ Should be replaced when mounting module")
       (redirect redirect-uri)))))
 
 (restas:define-route receiver-route ("receiver/:provider/*states"
-                                     :method :get
-                                     :content-type "text/html")
+                                     :method :get)
 ;  (:sift-variables (provider #'parse-provider))
   (:additional-variables
    (state (hunchentoot:parameter "state"))
@@ -39,8 +36,6 @@ Should be replaced when mounting module")
                                     ;; stable or uniq
            code error?)))
 
-(restas:define-route logout-route ("logout"
-                                   :method :get
-                                   :content-type "text/html")
+(restas:define-route logout-route ("logout" :method :get)
   (logout)
   (redirect *main*))

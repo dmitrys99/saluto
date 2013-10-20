@@ -65,12 +65,12 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
 
 (defun init-logger ()
 
-  (setf *logger* (log:make-logger))
+  (setf *logger* (log:category :saluto))
 
   (log:config *logger*
 	      :immediate-flush t
 	      :sane
-	      :daily   (concatenate 'string *saluto-log-prefix* "/" *saluto-log*)
+	      :daily   (pathname (concatenate 'string *saluto-log-prefix* "/" *saluto-log*))
 	      :pattern "SLT: %D{%Y-%m-%d %H:%M:%S} [%p] %t %m%n")
 
   (info-message "Saluto logging started"))
@@ -90,6 +90,6 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
            for log-fn  = (intern (string message-type) :log)
            collecting
              `(defun ,fn-name (message)
-                (,log-fn *logger* (untilde message))))))
+                (,log-fn :logger *logger* (untilde message))))))
 
 (messages-defun :debug :error :info :warning)

@@ -44,14 +44,15 @@
 (defun attach-saluto (provider-list store-fun)
   (assert (listp provider-list))
   ;; (break "attach-saluto (package): ~A" (package-name package))
+  (break "attach-saluto provider-list: ~A" provider-list)
   (dolist (i provider-list)
     (let ((module      (getf i :module))
           (app-id      (getf i :app-id))
           (app-private (getf i :app-private))
           (app-secret  (getf i :app-secret))
           (domain      (getf i :domain)))
-      ;; (break)
       (let ((provider (make-provider module app-id app-private app-secret domain store-fun)))
-        (attach-routes provider)))))
+        (attach-routes provider))))
+  (restas:mount-module saluto (#:saluto) (:inherit-parent-context t)))
 
 

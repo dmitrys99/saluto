@@ -43,7 +43,10 @@
   (apply 'drakma:http-request params))
 
 (defun concatenate-params (params)
-  (format nil "~{~{~a=~a~}~^&~}" params))
+  (with-output-to-string (out)
+    (format out "~a=~a" (caar params) (cdar params))
+    (loop for (name . value) in (cdr params) do
+         (format out "&~a=~a" name value))))
 
 (defun json-val (obj key)
   (handler-case

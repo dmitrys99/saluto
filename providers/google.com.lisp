@@ -35,7 +35,7 @@
   (let ((request (call-next-method provider access-token goto-path)))
     (setf (getf (cdr request) :parameters)
           (concatenate-params (cons
-                               '("grant_type" "authorization_code")
+                               '("grant_type" . "authorization_code")
                                (getf (cdr request) :parameters))))
     (substitute :content :parameters request)))
 

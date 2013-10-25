@@ -14,7 +14,11 @@
                         (make-instance 'saluto:oauth2-google.com
                                        :name "google.com"
                                        :app-id "845600361011.apps.googleusercontent.com"
-                                       :app-private-key "G90eET_kGV6kTLYyrhTvqBP3")))
+                                       :app-private-key "G90eET_kGV6kTLYyrhTvqBP3")
+                        (make-instance 'saluto:oauth2-facebook.com
+                                       :name "facebook.com"
+                                       :app-id "390129604417832"
+                                       :app-private-key "52f17dfdecdcec61c5806f937a8ae28d")))
   (saluto:*store-userinfo-fun*
    (lambda (info)
      (setf (gethash hunchentoot:*session* *users*) info))))
@@ -32,8 +36,8 @@
                    (:p (who:esc (format nil "~a ~a" (getf slots :last-name) (getf slots :first-name))))
                    (:p (:a :href (restas:genurl 'saluto.logout-route) "Logout")))))
           (who:htm 
-;;           (:p (:a :href (restas:genurl 'saluto.facebook.com.go-to-provider)
-;;                   "Login with FACEBOOK.COM"))
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "facebook.com")
+                   "Login with FACEBOOK.COM"))
            ;; (:p (:a :href (restas:genurl 'saluto.mail.ru.go-to-provider)
            ;;         "Login with MAIL.RU"))
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "google.com")

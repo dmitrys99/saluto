@@ -16,5 +16,5 @@
                (:file "provider")
                (:file "routes")
                (:module "providers"
-                :serial t
-                :components ((:file "google.com")))))
+                :components ((:file "google.com")
+                             (:file "facebook.com")))))

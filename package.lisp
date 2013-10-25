@@ -3,4 +3,5 @@
   (:export #:*main*
            #:*store-userinfo-fun*
            #:*providers*
-           #:oauth2-google.com))
+           #:oauth2-google.com
+           #:oauth2-facebook.com))

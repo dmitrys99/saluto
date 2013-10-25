@@ -56,7 +56,7 @@ asks it for access-token, for data, and redirects to target page"))
   (:documentation
    "Retrieves user info, using access token"))
 
-(defgeneric prepare-userinfo-token-request (provider access-token)
+(defgeneric prepare-userinfo-request (provider access-token)
   (:documentation "DRAKMA:REQUEST is called on result of this function"))
 
 (defgeneric extract-userinfo (provider request-result)
@@ -111,10 +111,10 @@ asks it for access-token, for data, and redirects to target page"))
           :method :POST
           :content-length t
           :parameters
-          `(("client_id"     ,(app-id provider))
-            ("client_secret" ,(app-private-key provider))
-            ("redirect_uri"  ,goto-path)
-            ("code"          ,code))))
+          `(("client_id"     . ,(app-id provider))
+            ("client_secret" . ,(app-private-key provider))
+            ("redirect_uri"  . ,goto-path)
+            ("code"          . ,code))))
 
 (defmethod extract-access-token ((provider oauth2-provider) answer)
   (jsown:val (jsown:parse answer) "access_token"))

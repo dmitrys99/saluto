@@ -18,8 +18,8 @@ Should be replaced when mounting module")
         (redirect
          (make-goto-path provider
                          (session)
-                         (or redirect-uri *main*)))
-      (redirect redirect-uri))))
+                         (or redirect-uri *main*))))
+      (redirect (or redirect-uri *main*))))
 
 (restas:define-route receiver-route ("receiver/:provider/*states"
                                      :method :get)

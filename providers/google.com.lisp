@@ -29,10 +29,10 @@
 
 (defmethod prepare-access-token-request :around ((provider
                                                   oauth2-google.com)
-                                                 access-token
+                                                 code
                                                  goto-path)
   "Google needs parameters to be send as data"
-  (let ((request (call-next-method provider access-token goto-path)))
+  (let ((request (call-next-method provider code goto-path)))
     (setf (getf (cdr request) :parameters)
           (concatenate-params (cons
                                '("grant_type" . "authorization_code")

@@ -15,6 +15,10 @@
                                        :name "google.com"
                                        :app-id "845600361011.apps.googleusercontent.com"
                                        :app-private-key "G90eET_kGV6kTLYyrhTvqBP3")
+                        (make-instance 'saluto:oauth2-mail.ru
+                                       :name "mail.ru"
+                                       :app-id "712129"
+                                       :app-private-key "eee171fb3b5d65a9d8dfb4e55659719e")
                         (make-instance 'saluto:oauth2-facebook.com
                                        :name "facebook.com"
                                        :app-id "390129604417832"
@@ -38,23 +42,11 @@
           (who:htm 
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "facebook.com")
                    "Login with FACEBOOK.COM"))
-           ;; (:p (:a :href (restas:genurl 'saluto.mail.ru.go-to-provider)
-           ;;         "Login with MAIL.RU"))
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "mail.ru")
+                   "Login with MAIL.RU"))
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "google.com")
                    "Login with GOOGLE.COM"))
-           (:p "Not logged in")))))))
-
-;; (restas:define-route receiver.mail.ru ("receiver.html")
-;;   "<html>
-;; <body>
-;; <script src=\"http://connect.mail.ru/js/loader.js\"></script>
-;; <script>
-;; mailru.loader.require('receiver', function(){
-;; 	mailru.receiver.init();
-;; })
-;; </script>
-;; </body>
-;; </html>
-;; ")
+           (:p "Not logged in")
+           (:p (:a :href (restas:genurl 'saluto.logout-route) "By the way, LOGOUT!"))))))))
 
 (restas:start '#:restas.test-saluto :port 8080)

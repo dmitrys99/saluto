@@ -74,10 +74,8 @@ asks it for access-token, for data, and redirects to target page"))
 
 (defmethod build-goto-path ((provider oauth2-provider) session redirect-uri)
   (list (oauth-login-url provider)
-        "client_id"
-        (app-id provider)
-        "redirect_uri"
-        (make-redirect-uri provider session redirect-uri)))
+        "client_id" (app-id provider)
+        "redirect_uri" (make-redirect-uri provider session redirect-uri)))
 
 (defmethod receive ((provider oauth2-provider) state code error?)
   (destructuring-bind (state redirect-uri) (split-state state)
@@ -122,6 +120,15 @@ asks it for access-token, for data, and redirects to target page"))
 ;;;; Third request to provider
 ;;;; The app receives userinfo
 
+(defvar *store-userinfo-fun*
+  (lambda (userinfo)
+    (declare (ignore userinfo))
+    (error "SALUTO: userinfo storing not implemented"))
+  "To be replaced on RESTAS:MOUNT-MODULE")
+
+(defun store-userinfo (userinfo)
+  (funcall *store-userinfo-fun* userinfo))
+
 (defmethod get-userinfo ((provider oauth2-provider) access-token)
   (store-userinfo
    (extract-userinfo
@@ -138,11 +145,3 @@ asks it for access-token, for data, and redirects to target page"))
   (append (list :session (session)
                 :provider (name provider))
           (call-next-method provider (jsown:parse answer))))
-
-(defvar *store-userinfo-fun*
-  (lambda (userinfo)
-    (declare (ignore userinfo))
-    (error "SALUTO: userinfo storing not implemented")))
-
-(defun store-userinfo (userinfo)
-  (funcall *store-userinfo-fun* userinfo))

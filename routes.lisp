@@ -21,6 +21,10 @@ Should be replaced when mounting module")
                          (or redirect-uri *main*))))
       (redirect (or redirect-uri *main*))))
 
+(defun make-states-back (states)
+  (when states
+    (format nil "~{~a~^/~}" states)))
+
 (restas:define-route receiver-route ("receiver/:provider/*states"
                                      :method :get)
   (:sift-variables (provider #'parse-provider))
@@ -29,9 +33,11 @@ Should be replaced when mounting module")
    (code (hunchentoot:parameter "code"))
    (error? (hunchentoot:parameter "error")))
   (receive provider
-           (or state (car states))  ;; It depends on provider, whether
-                                    ;; it wants redirect URL to be
-                                    ;; stable or uniq
+           (or state (make-states-back states))  ;; It depends on
+                                                 ;; provider, whether
+                                                 ;; it wants redirect
+                                                 ;; URL to be stable
+                                                 ;; or uniq
            code error?))
 
 (restas:define-route logout-route ("logout" :method :get)

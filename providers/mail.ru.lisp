@@ -36,21 +36,37 @@
                                (getf (cdr request) :parameters))))
     (substitute :content :parameters request)))
 
-(defmethod prepare-userinfo-request :around ((provider
-                                              oauth2-mail.ru)
-                                             access-token)
-  (let ((request (call-next-method provider access-token)))
-    (setf (getf (cdr request) :parameters)
-          (append
-           '(("method" . "users.getInfo")
-             ("secure" . "1"))
-           (getf (cdr request) :parameters)))
-    request))
+(defun md5 (str)
+  (ironclad:byte-array-to-hex-string
+   (ironclad:digest-sequence :md5
+                             (sb-ext:string-to-octets str))))
+
+(defun make-signature (provider params)
+  (md5 (format nil "~{~{~a=~a~}~}~a"
+               (mapcar (lambda (x)
+                         (list (car x) (cdr x)))
+                       params)
+               (app-private-key provider))))
+
+(defmethod prepare-userinfo-request ((provider
+                                      oauth2-mail.ru)
+                                     access-token)
+  (let ((params (list (cons "app_id" (app-id provider))
+                      (cons "method" "users.getInfo")
+                      (cons "secure" "1")
+                      (cons "session_key" access-token))))
+    (list (userinfo-query-url provider)
+          :parameters (cons
+                       (cons "sig" (make-signature provider params))
+                       params)
+          :content-length t
+          :method :get)))
 
 (defmethod extract-userinfo ((provider oauth2-mail.ru)
                              parsed-answer)
+  (setf parsed-answer (car parsed-answer))
   (list :first-name (json-val parsed-answer "first_name")
         :last-name (json-val parsed-answer "last_name")
-        :avatar (json-val parsed-answer "pic_22")
+        :avatar (json-val parsed-answer "pic_50")
         :email (json-val parsed-answer "email")
         :uid (json-val parsed-answer "uid")))

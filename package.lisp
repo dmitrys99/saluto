@@ -2,6 +2,7 @@
   (:use #:cl)
   (:export #:*main*
            #:*store-userinfo-fun*
+           #:*logged-in-p-fun*
            #:*providers*
            #:oauth2-google.com
            #:oauth2-facebook.com

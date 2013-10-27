@@ -29,7 +29,10 @@
                                        :app-private-key "pDO8PPhlfKLDL3gGryjC")))
   (saluto:*store-userinfo-fun*
    (lambda (info)
-     (setf (gethash hunchentoot:*session* *users*) info))))
+     (setf (gethash hunchentoot:*session* *users*) info)))
+  (saluto:*logged-in-p-fun*
+   (lambda ()
+     (gethash hunchentoot:*session* *users* nil))))
 
 (restas:define-route main ("" :method :get)
   (who:with-html-output-to-string (out)
@@ -52,7 +55,6 @@
                    "Login with VK.COM"))
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "google.com")
                    "Login with GOOGLE.COM"))
-           (:p "Not logged in")
-           (:p (:a :href (restas:genurl 'saluto.logout-route) "By the way, LOGOUT!"))))))))
+           (:p "Not logged in")))))))
 
 (restas:start '#:restas.test-saluto :port 8080)

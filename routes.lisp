@@ -4,6 +4,13 @@
   "Variable, containing providers objects
 Should be replaced when mounting module")
 
+(defvar *logged-in-p-fun*
+  (lambda ()
+    (error "LOGGED-IN-P: Not implemented"))
+  "Answers the question whether current user is really logged in.
+To be replaced when mounting module.
+Is needed only for LOGIN-WITH route.  Can be safely set to (CONSTANTLY NIL).")
+
 (defun parse-provider (provider-name)
   (or (find provider-name *providers* :key #'name :test #'string=)
       (error "SALUTO: No such provider ~A" provider-name)))
@@ -12,7 +19,8 @@ Should be replaced when mounting module")
   (:sift-variables (provider #'parse-provider))
   (:additional-variables (redirect-uri (hunchentoot:parameter "redirect")))
   ;; This REDIRECT-URI means just target page after successful login
-  (if (not (session))
+  (if (or (not (session))
+          (not (funcall *logged-in-p-fun*)))
       (progn
         (start-session)
         (redirect

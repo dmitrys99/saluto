@@ -16,7 +16,8 @@
                (:file "provider")
                (:file "routes")
                (:module "providers"
-                :components ((:file "google.com")
-                             (:file "facebook.com")
+                :components ((:file "facebook.com")
+                             (:file "github.com")
+                             (:file "google.com")
                              (:file "mail.ru")
                              (:file "vk.com")))))

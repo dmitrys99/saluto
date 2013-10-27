@@ -15,6 +15,10 @@
                                        :name "google.com"
                                        :app-id "845600361011.apps.googleusercontent.com"
                                        :app-private-key "G90eET_kGV6kTLYyrhTvqBP3")
+                        (make-instance 'saluto:oauth2-github.com
+                                       :name "github.com"
+                                       :app-id "ab844c69808d50d44904"
+                                       :app-private-key "8c09f10e3a8991acbcfc3b7f6b81f647a785c4c6")
                         (make-instance 'saluto:oauth2-mail.ru
                                        :name "mail.ru"
                                        :app-id "712129"
@@ -49,6 +53,8 @@
           (who:htm 
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "facebook.com")
                    "Login with FACEBOOK.COM"))
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "github.com")
+                   "Login with GITHUB.COM"))
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "mail.ru")
                    "Login with MAIL.RU"))
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "vk.com")

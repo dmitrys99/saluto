@@ -18,4 +18,5 @@
                (:module "providers"
                 :components ((:file "google.com")
                              (:file "facebook.com")
-                             (:file "mail.ru")))))
+                             (:file "mail.ru")
+                             (:file "vk.com")))))

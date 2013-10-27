@@ -22,7 +22,11 @@
                         (make-instance 'saluto:oauth2-facebook.com
                                        :name "facebook.com"
                                        :app-id "390129604417832"
-                                       :app-private-key "52f17dfdecdcec61c5806f937a8ae28d")))
+                                       :app-private-key "52f17dfdecdcec61c5806f937a8ae28d")
+                        (make-instance 'saluto:oauth2-vk.com
+                                       :name "vk.com"
+                                       :app-id "3958122"
+                                       :app-private-key "pDO8PPhlfKLDL3gGryjC")))
   (saluto:*store-userinfo-fun*
    (lambda (info)
      (setf (gethash hunchentoot:*session* *users*) info))))
@@ -44,6 +48,8 @@
                    "Login with FACEBOOK.COM"))
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "mail.ru")
                    "Login with MAIL.RU"))
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "vk.com")
+                   "Login with VK.COM"))
            (:p (:a :href (restas:genurl 'saluto.login-with :provider "google.com")
                    "Login with GOOGLE.COM"))
            (:p "Not logged in")

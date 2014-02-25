@@ -1,4 +1,6 @@
 saluto
 ======
 
-Authentication (OAuth 2.0, local password) module for RESTAS
+Authentication (OAuth 2.0) module for RESTAS
+
+For example usage see `example.lisp`.

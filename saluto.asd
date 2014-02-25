@@ -1,5 +1,3 @@
-; -*- coding: utf-8 mode: lisp -*-
-
 (defsystem saluto
   :name "Saluto"
   :author "Dmitry Solomennikov <dmitrys99@mail.ru>"
@@ -11,23 +9,15 @@
                #:split-sequence
                #:jsown
                #:cl-ppcre
-               #:log4cl
                #:drakma)
   :serial t
   :components ((:file "package")
-               (:module "src"
-                :serial t
-                :components ((:file "config")
-                             (:file "base")
-                             (:file "utils")
-                             (:file "oauth")
-                             (:file "code")
-                             (:file "starter")))
-               (:module "modules"
-                :serial t
-                :components ((:file "mail.ru")
-                             (:file "vk.com")
+               (:file "utils")
+               (:file "provider")
+               (:file "routes")
+               (:module "providers"
+                :components ((:file "facebook.com")
+                             (:file "github.com")
                              (:file "google.com")
-                             (:file "facebook.com")
-                             (:file "twitter.com")))))
-
+                             (:file "mail.ru")
+                             (:file "vk.com")))))

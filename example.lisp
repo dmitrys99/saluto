@@ -1,6 +1,4 @@
-(ql:quickload "cl-who")
-(ql:quickload "restas")
-(ql:quickload "saluto")
+(ql:quickload '("cl-who" "restas" "saluto"))
 
 (restas:define-module #:restas.test-saluto
   (:use #:cl))
@@ -9,24 +7,36 @@
 
 (defvar *users* (make-hash-table :test #'equal))
 
-(saluto:attach-saluto (list (list :module :facebook.com
-                                  :app-id "<facebook-app-id>"
-                                  :app-private "<facebook-app-private>"
-                                  :domain "http://localhost:8080")
-                            (list :module :mail.ru
-                                  :app-id "<mailru-app-id>"
-                                  :app-private "<mailru-app-private>"
-                                  :app-secret "<mailru-app-secret>"
-                                  :domain "http://localhost:8080")
-                            (list :module :google.com
-                                  :app-id "<google-app-id>"
-                                  :app-private "<google-app-private>"
-                                  :domain "http://localhost:8080"))
-                      (lambda (info)
-                        (setf (gethash hunchentoot:*session* *users*) info)))
-
 (restas:mount-module saluto (#:saluto)
-  (:inherit-parent-context t))
+  (:url "auth/")
+  (:inherit-parent-context t)
+  (saluto:*providers* (list
+                        (make-instance 'saluto:oauth2-google.com
+                                       :name "google.com"
+                                       :app-id "845600361011.apps.googleusercontent.com"
+                                       :app-private-key "G90eET_kGV6kTLYyrhTvqBP3")
+                        (make-instance 'saluto:oauth2-github.com
+                                       :name "github.com"
+                                       :app-id "ab844c69808d50d44904"
+                                       :app-private-key "8c09f10e3a8991acbcfc3b7f6b81f647a785c4c6")
+                        (make-instance 'saluto:oauth2-mail.ru
+                                       :name "mail.ru"
+                                       :app-id "712129"
+                                       :app-private-key "eee171fb3b5d65a9d8dfb4e55659719e")
+                        (make-instance 'saluto:oauth2-facebook.com
+                                       :name "facebook.com"
+                                       :app-id "390129604417832"
+                                       :app-private-key "52f17dfdecdcec61c5806f937a8ae28d")
+                        (make-instance 'saluto:oauth2-vk.com
+                                       :name "vk.com"
+                                       :app-id "3958122"
+                                       :app-private-key "pDO8PPhlfKLDL3gGryjC")))
+  (saluto:*store-userinfo-fun*
+   (lambda (info)
+     (setf (gethash hunchentoot:*session* *users*) info)))
+  (saluto:*logged-in-p-fun*
+   (lambda ()
+     (gethash hunchentoot:*session* *users* nil))))
 
 (restas:define-route main ("" :method :get)
   (who:with-html-output-to-string (out)
@@ -39,27 +49,18 @@
             (who:htm
              (:div (:img :src (getf slots :avatar) :style "float: left; padding-right: 10px;")
                    (:p (who:esc (format nil "~a ~a" (getf slots :last-name) (getf slots :first-name))))
-                   (:p (:a :href (restas:genurl 'saluto.auth.logout) "Logout")))))
+                   (:p (:a :href (restas:genurl 'saluto.logout-route) "Logout")))))
           (who:htm 
-           (:p (:a :href (restas:genurl 'saluto.facebook.com.go-to-provider)
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "facebook.com")
                    "Login with FACEBOOK.COM"))
-           (:p (:a :href (restas:genurl 'saluto.mail.ru.go-to-provider)
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "github.com")
+                   "Login with GITHUB.COM"))
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "mail.ru")
                    "Login with MAIL.RU"))
-           (:p (:a :href (restas:genurl 'saluto.google.com.go-to-provider)
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "vk.com")
+                   "Login with VK.COM"))
+           (:p (:a :href (restas:genurl 'saluto.login-with :provider "google.com")
                    "Login with GOOGLE.COM"))
            (:p "Not logged in")))))))
-
-(restas:define-route receiver.mail.ru ("receiver.html")
-  "<html>
-<body>
-<script src=\"http://connect.mail.ru/js/loader.js\"></script>
-<script>
-mailru.loader.require('receiver', function(){
-	mailru.receiver.init();
-})
-</script>
-</body>
-</html> 
-")
 
 (restas:start '#:restas.test-saluto :port 8080)

@@ -20,4 +20,5 @@
                              (:file "github.com")
                              (:file "google.com")
                              (:file "mail.ru")
-                             (:file "vk.com")))))
+                             (:file "vk.com")
+			     (:file "ok.ru")))))

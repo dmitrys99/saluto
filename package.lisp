@@ -8,4 +8,5 @@
            #:oauth2-github.com
            #:oauth2-google.com
            #:oauth2-mail.ru
-           #:oauth2-vk.com))
+           #:oauth2-vk.com
+	   #:oauth2-ok.ru))

@@ -9,6 +9,9 @@
    (app-private-key
     :reader app-private-key
     :initarg :app-private-key)
+   (app-public-key
+    :reader app-public-key
+    :initarg :app-public-key)
    (oauth-login-url
     :reader oauth-login-url)
    (access-token-query-url

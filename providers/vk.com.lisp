@@ -13,9 +13,13 @@
 
 (defmethod make-redirect-uri ((provider oauth2-vk.com) session redirect-uri)
   (declare (ignore session redirect-uri))
-  (restas:genurl* 'receiver-route
-                  :provider (name provider)
-                  :states ""))
+  (let ((u))
+    (setf u
+	  (restas:genurl* 'receiver-route
+			  :provider (name provider)
+			  :states ""))
+    u))
+
 
 (defmethod build-goto-path :around ((provider oauth2-vk.com)
                                     session

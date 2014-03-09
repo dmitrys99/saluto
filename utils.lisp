@@ -40,7 +40,11 @@
       (and (string/= (session) session))))
 
 (defun request (params)
-  (apply 'drakma:http-request params))
+#+SALUTO-DEBUG  (break "request: params: ~A" params)
+  (let ((res 
+      (apply 'drakma:http-request params)))
+#+SALUTO-DEBUG    (break "request: res: ~A uncoded ~A" res (sb-ext:octets-to-string res))
+    res))
 
 (defun concatenate-params (params)
   (with-output-to-string (out)

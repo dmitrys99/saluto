@@ -53,4 +53,4 @@
         :last-name (json-val parsed-answer "last_name")
         :avatar (json-val parsed-answer "photo")
         :email (json-val parsed-answer "email")
-        :uid (json-val parsed-answer "id")))
+        :uid (json-val parsed-answer "uid")))

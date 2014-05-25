@@ -12,6 +12,13 @@ To be replaced when mounting module.
 Is needed only for LOGIN-WITH route.
 From the Saluto's point of view can be safely set to (CONSTANTLY NIL).")
 
+(defvar *logout-fun*
+  (lambda (session)
+    (warn "LOGOUT-FUN: Not implemented"))
+  "Function to be called before user session closed on logout.
+To be replaced when mounting module.
+From the Saluto's point of view can be safely set to (CONSTANTLY NIL).")
+
 (defun parse-provider (provider-name)
   (or (find provider-name *providers* :key #'name :test #'string=)
       (error "SALUTO: No such provider ~A" provider-name)))
@@ -49,5 +56,7 @@ From the Saluto's point of view can be safely set to (CONSTANTLY NIL).")
            code error?))
 
 (restas:define-route logout-route ("logout" :method :get)
+	(when *logout-fun*
+		(funcall *logout-fun* (session)))
   (logout)
   (redirect *main*))

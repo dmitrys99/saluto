@@ -30,17 +30,17 @@ Example usage:
                        (saluto:*providers* (list
                                             (make-instance 'saluto:oauth2-facebook.com
                                                            :name "facebook.com"
-                                                           :app-id "<app-id>"
-                                                           :app-private-key "<app-key>")
+                                                           :app-id "app-id"
+                                                           :app-private-key "app-key")
                                             (make-instance 'saluto:oauth2-vk.com
                                                            :name "vk.com"
-                                                           :app-id "<app-id>"
-                                                           :app-private-key "<app-key>")
+                                                           :app-id "app-id"
+                                                           :app-private-key "app-key")
                                             (make-instance 'saluto:oauth2-ok.ru
                                                            :name "odnoklassniki.ru"
-                                                           :app-id "<app-id>"
-                                                           :app-public-key "<app-key>"
-                                                           :app-private-key "<app-private>")))
+                                                           :app-id "app-id"
+                                                           :app-public-key "app-key"
+                                                           :app-private-key "app-private")))
                        (saluto:*store-userinfo-fun*
                         (lambda (info)
                           (when info
@@ -48,12 +48,12 @@ Example usage:
                             ;; (maybe-save-user info :cache-user t :session (session-identifier))
                             ;;
                             ;; Structure of user info:
-                            ;; '(:first-name <first name>
-                            ;;   :last-name <last-name>
-                            ;;   :email <email>
-                            ;;   :uid <user id at provider level>
-                            ;;   :avatar <user avatar URI>
-                            ;;   :provider <provider name>)
+                            ;; '(:first-name "first name"
+                            ;;   :last-name "last-name"
+                            ;;   :email "email"
+                            ;;   :uid "user id at provider level"
+                            ;;   :avatar "user avatar URI"
+                            ;;   :provider "provider name")
                             )))
                        (saluto:*logged-in-p-fun*
                         ;; function, called to check if user logged or not

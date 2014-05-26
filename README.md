@@ -69,3 +69,5 @@ Example usage:
 To start login process point user to URI /auth/goto/provider, ex.: <http://localhost:8080/auth/goto/vk.com/>
 
 For full example usage see `example.lisp`.
+
+Many thanks to <https://github.com/Menschenkindlein> for Lispy improvements.

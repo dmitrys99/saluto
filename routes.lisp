@@ -55,8 +55,11 @@ From the Saluto's point of view can be safely set to (CONSTANTLY NIL).")
                                                  ;; or uniq
            code error?))
 
-(restas:define-route logout-route ("logout" :method :get)
+(restas:define-route logout-route ("logout/" :method :get)
 	(when *logout-fun*
 		(funcall *logout-fun* (session)))
   (logout)
   (redirect *main*))
+
+(restas:define-route logout-stub ("logout" :method :get)
+  (redirect (restas:genurl 'logout-route)))

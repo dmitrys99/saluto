@@ -46,6 +46,7 @@
 
 (defmethod extract-userinfo ((provider oauth2-facebook.com)
                              parsed-answer)
+
   (list :first-name (json-val parsed-answer "first_name")
         :last-name (json-val parsed-answer "last_name")
         :avatar (json-val
@@ -55,5 +56,5 @@
                    "picture")
                   "data")
                  "url")
-        :email (json-val parsed-answer "email")
+        :email (cl-ppcre:regex-replace "u0040" (json-val parsed-answer "email") "@")
         :uid (json-val parsed-answer "id")))

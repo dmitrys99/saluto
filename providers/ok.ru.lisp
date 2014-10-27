@@ -15,14 +15,16 @@
   (declare (ignore session redirect-uri))
   (restas:genurl* 'receiver-route
                   :provider (name provider)
-                  :states (make-state session redirect-uri)))
+                  :states ""))
 
 (defmethod build-goto-path :around ((provider oauth2-ok.ru)
                                     session
                                     redirect-uri)
   (append
    (call-next-method provider session redirect-uri)
-   (list "response_type" "code")))
+   (list "response_type" "code"
+         "state" (make-state session redirect-uri))
+   ))
 
 (defmethod prepare-access-token-request :around ((provider
                                                   oauth2-ok.ru)
@@ -43,7 +45,7 @@
 
 (defun make-signature (provider access-token)
   (let ((sgn
-	  (format nil "application_key=~Amethod=users.getCurrentUser~A" 
+	  (format nil "application_key=~Amethod=users.getCurrentUser~A"
 		  (app-public-key provider)
 		  (md5 (format nil "~A~A" access-token (app-private-key provider))))))
 #+SALUTO-DEBUG    (break "~S" sgn)

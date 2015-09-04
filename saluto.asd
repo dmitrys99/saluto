@@ -6,6 +6,7 @@
   :depends-on (#:hunchentoot
                #:restas
                #:ironclad
+               #:babel
                #:split-sequence
                #:jsown
                #:cl-ppcre

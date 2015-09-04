@@ -41,7 +41,7 @@
 (defun md5 (str)
   (ironclad:byte-array-to-hex-string
    (ironclad:digest-sequence :md5
-                             (sb-ext:string-to-octets str))))
+                             (babel:string-to-octets str))))
 
 (defun make-signature (provider access-token)
   (let ((sgn
@@ -64,10 +64,10 @@
           :method :get)))
 
 (defmethod extract-access-token :around ((provider oauth2-ok.ru) answer)
-  (call-next-method provider (sb-ext:octets-to-string answer :external-format :UTF-8)))
+  (call-next-method provider (babel:octets-to-string answer :encoding :UTF-8)))
 
 (defmethod extract-userinfo :around ((provider oauth2-ok.ru) answer)
-  (call-next-method provider (sb-ext:octets-to-string answer :external-format :UTF-8)))
+  (call-next-method provider (babel:octets-to-string answer :encoding :UTF-8)))
 
 (defmethod extract-userinfo ((provider oauth2-ok.ru)
                              parsed-answer)

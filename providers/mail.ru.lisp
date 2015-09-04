@@ -39,7 +39,7 @@
 (defun md5 (str)
   (ironclad:byte-array-to-hex-string
    (ironclad:digest-sequence :md5
-                             (sb-ext:string-to-octets str))))
+                             (babel:string-to-octets str))))
 
 (defun make-signature (provider params)
   (md5 (format nil "~{~{~a=~a~}~}~a"

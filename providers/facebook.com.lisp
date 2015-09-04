@@ -42,7 +42,7 @@
 
 (defmethod extract-userinfo :around ((provider oauth2-facebook.com)
                                      answer)
-  (call-next-method provider (sb-ext:octets-to-string answer :external-format :UTF-8)))
+  (call-next-method provider (babel:octets-to-string answer :encoding :UTF-8)))
 
 (defmethod extract-userinfo ((provider oauth2-facebook.com)
                              parsed-answer)

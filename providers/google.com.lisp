@@ -57,11 +57,11 @@ because the answer of google.com for unknown reasons contains sudden chunks of z
 (defmethod extract-userinfo ((provider oauth2-google.com)
                              parsed-answer)
   (labels ((code-decode (string)              ;;;; Indeed, I don't know what does it mean
-             (sb-ext:octets-to-string
-              (sb-ext:string-to-octets
+             (babel:octets-to-string
+              (babel:string-to-octets
                string
-               :EXTERNAL-FORMAT :LATIN-1)
-              :EXTERNAL-FORMAT :UTF-8)))
+               :encoding :LATIN-1)
+              :encoding :UTF-8)))
     (list :first-name (code-decode (json-val parsed-answer "given_name"))
           :last-name (code-decode (json-val parsed-answer "family_name"))
           :avatar (json-val parsed-answer "picture")
